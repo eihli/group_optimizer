@@ -1,17 +1,17 @@
 import json
 import copy
 import time
-from grouper.csv2json import csv2json
-from grouper.arrangement import Arrangement
-from grouper.group import Group
-from grouper.participant import Participant
-from grouper.strategy import Strategy
-from grouper.arrangement2csv import arrangement2csv
+from csv2json import csv2json
+from arrangement import Arrangement
+from group import Group
+from participant import Participant
+from strategy import Strategy
+from arrangement2csv import arrangement2csv
 
 # Constants
 OUTPUT_FILENAME = "arrangement" # Right now, it will write to file the top 3 scoring arrangements
-OUTPUT_FOLDER = '/Users/eihli/Projects/grouper/grouper/sample_data' # Rename this to your folder (or empty string '' to use current directory)
-INPUT_CSV_FILENAME = "/Users/eihli/Projects/grouper/grouper/sample_data/class.csv" # Rename this to your CSV file. View readme for formatting rules.
+OUTPUT_FOLDER = '/Users/eihli/Projects/grouper/grouping_algo/sample_data' # Rename this to your folder (or empty string '' to use current directory)
+INPUT_CSV_FILENAME = "/Users/eihli/Projects/grouper/grouping_algo/sample_data/class.csv" # Rename this to your CSV file. View readme for formatting rules.
 TIMEOUT = 300 # in seconds
 NUM_ITERATIONS = 10 # Higher number gives better groups but takes longer.
 # NUM_PARTICIPANTS_PER_GROUP = 3 # This isn't working yet.
@@ -36,7 +36,7 @@ def genetic(arrangement):
         tempArrangements.append(copy.deepcopy(arrangement))
       result = sorted(tempArrangements, key=lambda x: x.score)
       arrangements = result[-10:]
-  print arrangements
+  print(arrangements)
 
 
 #-------------- Make best swap from unhappiest group -----------#
@@ -47,8 +47,8 @@ def swapUnhappiest(arrangement):
   end = time.time()
   while end - start < TIMEOUT and previousScoreImprovement != 0:
     previousScoreImprovement = arrangement.makeBestSwapFromUnhappiestGroup()
-    print arrangement
-    print previousScoreImprovement
+    print(arrangement)
+    print(previousScoreImprovement)
     arrangement.score = arrangement.calculateScore()
   return arrangement
 
@@ -60,7 +60,7 @@ jsonArrangement = csv2json(INPUT_CSV_FILENAME)
 # with open('grouper/sample_data/class40participants.json') as csvFile:
 # jsonArrangement = json.dumps(json.load(csvFile))
 
-print jsonArrangement;
+print(jsonArrangement)
 
 arrangements = [Arrangement(jsonString = jsonArrangement) for x in range(NUM_ITERATIONS)]
 for arrangement in arrangements:
@@ -71,7 +71,7 @@ results = []
 for arrangement in arrangements:
   results.append(swapUnhappiest(arrangement))
   results = sorted(results, key = lambda x: x.score)
-  print results[-3:]
+  print(results[-3:])
 
 # # Save to file
 for i in range(1, 5):

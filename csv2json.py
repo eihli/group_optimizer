@@ -19,19 +19,19 @@ def csv2json(filename, writeToFile = False):
     "T": result["technical_refusals"]
   }
   # Get the names of each person from the header.
-  header = reader.next().strip().split(',')[2:]
+  header = reader.readline().strip().split(',')[2:]
   # print "header lenght" + str(len(header))
   for survey in result:
     for name in header:
       result[survey][name] = []
-  print result
+  print(result)
 
   for row in reader:
     row = row.strip().split(',')[1:]
     name = row[0].strip()
-    print row
+    print(row)
     row = row[1:]
-    print row
+    print(row)
     for i in range(len(row)-1):
       cell = str(row[i]).strip()
       for char in cell:
@@ -39,8 +39,8 @@ def csv2json(filename, writeToFile = False):
           if not responseMap[char][name]:
             responseMap[char][name] = []
           responseMap[char][name].append(header[i])
-  print result
-  print json.dumps(result, indent=2, separators=(',', ': '))
+  print(result)
+  print(json.dumps(result, indent=2, separators=(',', ': ')))
 
   # Write to file if we want to save the json object.
   # Otherwise, simply return it.
@@ -49,7 +49,7 @@ def csv2json(filename, writeToFile = False):
     f.write(json.dumps(result, indent=2, separators=(',', ': ')))
   return json.dumps(result, indent=2, separators=(',', ': '))
 
-    # print row
+    # print(row)
 
 
   # for row in reader:

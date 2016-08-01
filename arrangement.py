@@ -4,6 +4,7 @@ import random
 from strategy import Strategy
 from participant import Participant
 from group import Group
+from functools import reduce
 NUM_INDIVIDUALS_PER_GROUP = 4
 
 class Arrangement:
@@ -23,7 +24,7 @@ class Arrangement:
   def __repr__(self):
     result = ''
     averageGroupScore = reduce(lambda x, y: x + y.getScore(), self.groups, 0) / self.numGroups
-    print averageGroupScore
+    print((averageGroupScore))
     i = 0
     result += "Arrangement with Score: " + str(self.score) + " "
     result += "with average score: " + str(averageGroupScore) + '\n'
@@ -74,26 +75,26 @@ class Arrangement:
       for surveyType in survey:
         for name in survey[surveyType][participant.name]:
           # set their affinity
-          # print participant.name + ' ' + surveyType + ' ' + name
+          # print((participant.name + ' ' + surveyType + ' ' + name))
           participant.affinityDict[surveyType](self.getParticipant(name))
 
   def loadParticipantsFromJson(self, jsonString):
     survey = json.loads(jsonString)
-    print survey
+    print((survey))
     for name in survey['technical_refusals']:
       self.addParticipant(Participant(name))
     for participant in self.participants:
       for surveyType in survey:
         for name in survey[surveyType][participant.name]:
           # set their affinity
-          # print participant.name + ' ' + surveyType + ' ' + name
+          # print((participant.name + ' ' + surveyType + ' ' + name))
           participant.affinityDict[surveyType](self.getParticipant(name))
 
 
   def assignParticipantsToGroups(self, numGroups):
     for i in range(self.numGroups):
       self.addGroup()
-    print "Num groups: " + str(self.numGroups)
+    print(("Num groups: " + str(self.numGroups)))
     for i in range(len(self.participants)):
       self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
 
