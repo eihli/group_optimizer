@@ -139,11 +139,12 @@ class Arrangement:
     self.addParticipantToGroup(b, aGroup)
 
   def makeBestSwap(self):
-    for i in self.numGroups:
-      for p1 in self.groups[i]:
-        for j in self.numGroups:
+    for i in range(self.numGroups):
+      for p1 in self.groups[i].participants:
+        for j in range(self.numGroups):
           if not i == j:
-            for p2 in self.groups[j]:
+            for p2 in self.groups[j].participants:
+              print('Swapping {} for {}'.format(p1.name, p2.name))
               self.swapIndividuals(p1, p2)
 
   # This should be pulled out into a subclass or Arrangement Strategy or something.
