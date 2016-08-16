@@ -1,6 +1,10 @@
 import json
 import copy
 import time
+import sys
+from pathlib import Path
+root = str(Path(__file__).resolve().parents[1])
+sys.path.append(root)
 from csv2json import csv2json
 from arrangement import Arrangement
 from group import Group
