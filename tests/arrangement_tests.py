@@ -54,7 +54,8 @@ class arrangementTestCase(unittest.TestCase):
     def test_arrangement_can_read_from_file(self):
         self.assertEqual(len(self.arrangement.participants), 20)
         self.assertIsInstance(self.arrangement.participants[1], Participant)
-        self.assertEqual(self.arrangement.participants[0].name, 'Mary Polster')
+        names = map(lambda p: p.name, self.arrangement.participants)
+        self.assertIn('Mary Polster', names)
 
     def test_arrangement_can_assign_participants_to_group(self):
         a = Arrangement()
