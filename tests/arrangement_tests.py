@@ -21,8 +21,6 @@ class arrangementTestCase(unittest.TestCase):
         self.arrangement2.addGroup(self.g1)
         self.arrangement2.addGroup(self.g2)
 
-
-
     def test_arrangement_exists(self):
         self.assertIsInstance(self.arrangement, Arrangement)
 
