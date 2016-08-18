@@ -4,7 +4,7 @@ class Participant:
 
   @staticmethod
   def createRandomParticipant():
-    return Participant(names.get_full_name().encode('ascii'))
+    return Participant(names.get_full_name())
 
   def __init__(self, name):
     self.name = name
