@@ -90,7 +90,7 @@ class Arrangement:
                     participant.affinityDict[surveyType](self.getParticipant(name))
 
     def assignParticipantsToGroups(self, numGroups):
-        for i in range(self.numGroups):
+        for i in range(numGroups):
             self.addGroup()
         print(("Num groups: " + str(self.numGroups)))
         for i in range(len(self.participants)):
