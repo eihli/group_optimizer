@@ -1,7 +1,6 @@
 import json
 import math
 import random
-from .strategy import Strategy
 from .participant import Participant
 from .group import Group
 from functools import reduce
@@ -17,7 +16,6 @@ class Arrangement:
             self.loadParticipantsFromJson(jsonString)
         self.numGroups = int(math.ceil(1.0 * len(self.participants) / NUM_INDIVIDUALS_PER_GROUP))
         self.assignParticipantsToGroups(self.numGroups)
-        self.strategy = Strategy(self)
         self.score = None
 
     def __repr__(self):
