@@ -1,13 +1,17 @@
 import unittest
-from ..arrangement import Arrangement
+from grouping_algo.arrangement import Arrangement
 from ..group import Group
 from ..participant import Participant
 import os
+import pdb
+import json
 
 class arrangementTestCase(unittest.TestCase):
     def setUp(self):
-        self.arrangement = Arrangement(filename = os.path.abspath(os.path.join('grouping_algo/sample_data/affinities.json')))
-        self.arrangement2 = Arrangement()
+        f = open('grouping_algo/sample_data/affinities.json')
+        survey = json.load(f)
+        self.arrangement = Arrangement(survey)
+        self.arrangement2 = Arrangement(survey)
         self.p1 = Participant("Eric")
         self.p2 = Participant("Sam")
         self.p3 = Participant("Glenn")
@@ -55,54 +59,37 @@ class arrangementTestCase(unittest.TestCase):
         names = map(lambda p: p.name, self.arrangement.participants)
         self.assertIn('Mary Polster', names)
 
-    def test_arrangement_can_assign_participants_to_group(self):
-        a = Arrangement()
-        a.addParticipant(self.p1)
-        a.addParticipant(self.p2)
-        a.addParticipant(self.p3)
-        a.addParticipant(self.p4)
-        a.assignParticipantsToGroups(2)
-        self.assertEqual(len(a.groups[0].participants), 2)
-        self.assertEqual(a.groups[0].participants[0].name, 'Eric')
-
     def test_arrangement_scoring_function(self):
         self.arrangement.groups = []
         group = Group()
         # TODO: Finish arrangement scoring function/tests
 
-    def test_remove_participant_from_group(self):
-        a = Arrangement()
-        g = Group()
-        a.addGroup(g)
-        a.addParticipantToGroup(self.p1, g)
-        self.assertEqual(a.groups[0].participants[0].name, 'Eric')
-        a.removeParticipantFromGroup(self.p1)
-        # Cool way to test the index no longer exists. Trying to access
-        # an index out of range raises an IndexError exception.
-        with self.assertRaises(IndexError):
-                a.groups[0].participants[0]
-        # Yeah... len() might work too, and might be more understandable
-        # without comments. But this is cool, and these are comments.
- 
     # These next tests are something that should be abstracted out into a strategy
     # We want to be able to swap the each person from the unhappiest group
     # into each other group until and keep the "best" arrangement from those
     # swaps.
     def test_get_unhappiest_group(self):
-        a = Arrangement()
-        a.addGroup()
-        a.addGroup()
-        p1 = Participant('eric')
-        p2 = Participant('john')
-        p3 = Participant('sam')
-        p4 = Participant('glenn')
-        p1.addAffinity(p3)
-        p1.addAffinity(p4)
-        p2.addTechnicalRefusal(p4)
-        a.addParticipantToGroup(p1, a.groups[0])
-        a.addParticipantToGroup(p3, a.groups[0])
-        a.addParticipantToGroup(p2, a.groups[1])
-        a.addParticipantToGroup(p4, a.groups[1])
+        json_arrangement = {
+            "technical_refusals": {
+                "john": ["glenn"],
+                "glenn": [],
+                "eric": [],
+                "sam": []
+            },
+            "interpersonal_refusals": {
+                "john": [],
+                "glenn": [],
+                "eric": [],
+                "sam": []
+                },
+            "affinities": {
+                "eric": ["sam", "glenn"],
+                "john": [],
+                "sam": [],
+                "glenn": []
+            }
+        }
+        a = Arrangement(json_arrangement, 2)
         self.assertEqual(a.getUnhappiestGroup(), a.groups[1])
 
     # I think I just found a perfect use case for generators and yield
@@ -112,16 +99,35 @@ class arrangementTestCase(unittest.TestCase):
     # We don't want the arrangement score checking code inside this function.
     # https://www.jeffknupp.com/blog/2013/04/07/improve-your-python-yield-and-generators-explained/
     def test_makes_best_swap_from_unhappiest_group(self):
-        self.p1.addAffinity(self.p2)
-        self.p1.addAffinity(self.p4)
-        self.p1.addTechnicalRefusal(self.p3)
-        self.p2.addAffinity(self.p3)
-        self.arrangement2.addParticipantToGroup(self.p1, self.g1)
-        self.arrangement2.addParticipantToGroup(self.p3, self.g1)
-        self.arrangement2.addParticipantToGroup(self.p2, self.g2)
-        self.arrangement2.addParticipantToGroup(self.p4, self.g2)
-        self.arrangement2.makeBestSwapFromUnhappiestGroup()
-        self.assertEqual(self.arrangement2.calculateScore(), 1)
-        self.arrangement2.makeBestSwapFromUnhappiestGroup()
-        self.assertEqual(self.arrangement2.calculateScore(), 2)
+        json_arrangement = {
+            "technical_refusals": {
+                "a": ["d"],
+                "b": ["e"],
+                "c": [],
+                "d": ["a"],
+                "e": [],
+                "g": []
+            },
+            "interpersonal_refusals": {
+                "a": [],
+                "b": [],
+                "c": [],
+                "d": [],
+                "e": [],
+                "g": []
+                },
+            "affinities": {
+                "a": ["c"],
+                "b": ["g"],
+                "c": ["b"],
+                "d": [],
+                "e": [],
+                "g": ["b"]
+            }
+        }
+        a = Arrangement(json_arrangement, 2)
+        a.makeBestSwapFromUnhappiestGroup()
+        self.assertEqual(a.calculateScore(), -99)
+        a.makeBestSwapFromUnhappiestGroup()
+        self.assertEqual(a.calculateScore(), 1)
 

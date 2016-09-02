@@ -1,22 +1,38 @@
 import json
+import pdb
 import math
 import random
+from .strategy import Strategy
 from .participant import Participant
 from .group import Group
 from functools import reduce
-NUM_INDIVIDUALS_PER_GROUP = 4
 
 class Arrangement:
-    def __init__(self, filename = None, jsonString = None):
+    def __init__(self, json_arrangement, num_individuals_per_group = 4):
         self.groups = []
         self.participants = []
-        if (filename):
-            self.readParticipantsFromFile(filename)
-        if (jsonString):
-            self.loadParticipantsFromJson(jsonString)
-        self.numGroups = int(math.ceil(1.0 * len(self.participants) / NUM_INDIVIDUALS_PER_GROUP))
-        self.assignParticipantsToGroups(self.numGroups)
+        self._create_participants(json_arrangement)
+        # Sort participants. This at least guarantees predictability in initial setup
+        # and is helpful for testing.
+        self.participants = sorted(self.participants, key=lambda p: p.name.lower())
+        numGroups = int(math.ceil(1.0 * len(self.participants) / num_individuals_per_group))
+        for i in range(numGroups):
+            self.groups.append(Group())
+        for i in range(len(self.participants)):
+            self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
         self.score = None
+
+    def _create_participants(self, json_arrangement):
+        # There is no particular reason we use 'technical_refusals' here.
+        # Each survey type has a full list of every name. That's all we need.
+        for name in json_arrangement['technical_refusals']:
+            self.addParticipant(Participant(name))
+        for participant in self.participants:
+            for json_arrangementType in json_arrangement:
+                for name in json_arrangement[json_arrangementType][participant.name]:
+                    # set their affinity
+                    # print((participant.name + ' ' + json_arrangementType + ' ' + name))
+                    participant.affinityDict[json_arrangementType](self.getParticipant(name))
 
     def __repr__(self):
         result = ''
@@ -35,6 +51,13 @@ class Arrangement:
             i += 1
         result += '\n'
         return result
+
+    def optimize(self):
+        self.addParticipantToGroup(self.participants[0], self.groups[0])
+        self.addParticipantToGroup(self.participants[1], self.groups[0])
+
+    def calculateScore(self):
+        return sum(group.getScore() for group in self.groups)
 
     def getParticipant(self, name):
         return next(p for p in self.participants if p.name == name)
@@ -60,9 +83,6 @@ class Arrangement:
         group.removeParticipant(participant)
         group.getScore()
 
-    def calculateScore(self):
-        return sum(group.getScore() for group in self.groups)
-
     def readParticipantsFromFile(self, filename):
         f = open(filename)
         survey = json.load(f)
@@ -77,20 +97,20 @@ class Arrangement:
 
     def loadParticipantsFromJson(self, jsonString):
         survey = json.loads(jsonString)
-        print((survey))
+        # Doesn't matter which survey we use here.
+        # We just need a list of all names
         for name in survey['technical_refusals']:
             self.addParticipant(Participant(name))
         for participant in self.participants:
-            for surveyType in survey:
-                for name in survey[surveyType][participant.name]:
-                  # set their affinity
-                  # print((participant.name + ' ' + surveyType + ' ' + name))
-                    participant.affinityDict[surveyType](self.getParticipant(name))
+            set_affinities(survey, participant)
 
-    def assignParticipantsToGroups(self, numGroups):
-        for i in range(numGroups):
-            self.addGroup()
-        print(("Num groups: " + str(self.numGroups)))
+    @staticmethod
+    def set_affinities(survey, participant):
+        for surveyType in survey:
+            for name in survey[surveyType][participant.name]:
+                participant.affinityDict[surveyType](self.getParticipant(name))
+
+    def assignParticipantsToGroups(self):
         for i in range(len(self.participants)):
             self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
 
