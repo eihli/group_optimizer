@@ -11,32 +11,12 @@ class arrangementTestCase(unittest.TestCase):
         f = open('grouping_algo/sample_data/affinities.json')
         survey = json.load(f)
         self.arrangement = Arrangement(survey)
-        self.arrangement2 = Arrangement(survey)
         self.p1 = Participant("Eric")
         self.p2 = Participant("Sam")
         self.p3 = Participant("Glenn")
         self.p4 = Participant("Taylor")
         self.g1 = Group()
         self.g2 = Group()
-        self.arrangement2.addParticipant(self.p1)
-        self.arrangement2.addParticipant(self.p2)
-        self.arrangement2.addParticipant(self.p3)
-        self.arrangement2.addParticipant(self.p4)
-        self.arrangement2.addGroup(self.g1)
-        self.arrangement2.addGroup(self.g2)
-
-    def test_arrangement_exists(self):
-        self.assertIsInstance(self.arrangement, Arrangement)
-
-    def test_arrangement_has_groups(self):
-        self.assertIsInstance(self.arrangement.groups, list)
-
-    def test_arrangement_has_participants(self):
-        self.assertIsInstance(self.arrangement.participants, list)
-
-    def test_arrangement_add_group(self):
-        self.arrangement.addGroup()
-        self.assertIsInstance(self.arrangement.groups[0], Group)
 
     def test_arrangement_get_participant(self):
         self.arrangement.addParticipant(self.p1)
