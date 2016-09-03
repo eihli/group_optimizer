@@ -2,9 +2,9 @@ import json
 import pdb
 import math
 import random
+from functools import reduce
 from .strategy import Strategy
 from .participant import Participant
-from .group import Group
 from functools import reduce
 
 class Arrangement:
@@ -17,10 +17,10 @@ class Arrangement:
         self.participants = sorted(self.participants, key=lambda p: p.name.lower())
         numGroups = int(math.ceil(1.0 * len(self.participants) / num_individuals_per_group))
         for i in range(numGroups):
-            self.groups.append(Group())
+            self.groups.append([])
         for i in range(len(self.participants)):
-            self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
-        self.score = None
+            self.groups[i % numGroups].append(self.participants[i])
+        self.score = self.calculateScore()
 
     def _create_participants(self, json_arrangement):
         # There is no particular reason we use 'technical_refusals' here.
@@ -36,8 +36,7 @@ class Arrangement:
 
     def __repr__(self):
         result = ''
-        averageGroupScore = reduce(lambda x, y: x + y.getScore(), self.groups, 0) / self.numGroups
-        print((averageGroupScore))
+        averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
         i = 0
         result += "Arrangement with Score: " + str(self.score) + " "
         result += "with average score: " + str(averageGroupScore) + '\n'
@@ -53,20 +52,17 @@ class Arrangement:
         return result
 
     def optimize(self):
-        self.addParticipantToGroup(self.participants[0], self.groups[0])
-        self.addParticipantToGroup(self.participants[1], self.groups[0])
+        self.makeBestSwapFromUnhappiestGroup()
+        self.makeBestSwapFromUnhappiestGroup()
 
     def calculateScore(self):
-        return sum(group.getScore() for group in self.groups)
+        total = 0
+        for group in self.groups:
+            total += self._get_group_score(group)
+        return total
 
     def getParticipant(self, name):
         return next(p for p in self.participants if p.name == name)
-
-    def addGroup(self, group = None):
-        #TODO: Handle passing in a group with participants.
-        # Add participants to list. Etc...
-        group = group or Group()
-        self.groups.append(group)
 
     def addParticipant(self, participant):
         self.participants.append(participant)
@@ -114,16 +110,8 @@ class Arrangement:
         for i in range(len(self.participants)):
             self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
 
-    def randomizeGroups(self):
-        self.groups = []
-        random.shuffle(self.participants)
-        for i in range(self.numGroups):
-                self.addGroup()
-        for i in range(len(self.participants)):
-                self.addParticipantToGroup(self.participants[i], self.groups[i % self.numGroups])
-
     def swapRandomIndividuals(self):
-        numGroups = self.numGroups
+        numGroups = len(self.groups)
         if numGroups == 1:
             raise ValueError('Number of groups in arrangement must be greater than 1 for mutating.')
 
@@ -143,24 +131,55 @@ class Arrangement:
         self.groups[secondGroupIndex].participants[secondIndividualIndex] = firstIndividual
 
     def getUnhappiestGroup(self):
-        return reduce(lambda g, a: g if g.getScore() < a.getScore() else a, self.groups)
+        group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
+        return group
+
+    def _get_group_score(self, group):
+        score = 0
+        for participant1 in group:
+            for participant2 in group:
+                if participant1 != participant2:
+                    if participant2 in participant1.affinities:
+                        score += 1
+                    if participant2 in participant1.technicalRefusals:
+                        score -= 100
+                    if participant2 in participant1.interpersonalRefusals:
+                        score -= 100
+        return score
+
 
     # TODO: Test
     def swapIndividuals(self, a, b):
-        bGroup = b.group
-        aGroup = a.group
-        self.removeParticipantFromGroup(b)
-        self.removeParticipantFromGroup(a)
-        self.addParticipantToGroup(a, bGroup)
-        self.addParticipantToGroup(b, aGroup)
+        aGroupIndex = self._find_group_index_for_participant(a)
+        bGroupIndex = self._find_group_index_for_participant(b)
+        aGroup = self.groups[aGroupIndex]
+        bGroup = self.groups[bGroupIndex]
+
+        aIndex = self._find_participant_index_in_group(aGroup, a)
+        bIndex = self._find_participant_index_in_group(bGroup, b)
+        temp_a = aGroup[aIndex]
+        temp_b = bGroup[bIndex]
+
+        self.groups[aGroupIndex][aIndex] = temp_b
+        self.groups[bGroupIndex][bIndex] = temp_a
+
+    def _find_group_index_for_participant(self, p):
+        for idx, group in enumerate(self.groups):
+            if p in group:
+                return idx
+
+    def _find_participant_index_in_group(self, g, p):
+        for idx, participant in enumerate(g):
+            if participant == p:
+                return idx
+
 
     def makeBestSwap(self):
-        for i in range(self.numGroups):
+        for i in range(len(self.groups)):
             for p1 in self.groups[i].participants:
-                for j in range(self.numGroups):
+                for j in range(len(self.groups)):
                     if not i == j:
                         for p2 in self.groups[j].participants:
-                            print('Swapping {} for {}'.format(p1.name, p2.name))
                             self.swapIndividuals(p1, p2)
 
     # This should be pulled out into a subclass or Arrangement Strategy or something.
@@ -168,10 +187,11 @@ class Arrangement:
         bestGain = 0
         bestSwap = (None, None)
         unhappiestGroup = self.getUnhappiestGroup()
-        for participant1 in unhappiestGroup.participants:
+        global_old_score = self.calculateScore()
+        for participant1 in unhappiestGroup:
             for group in self.groups:
                 if group != unhappiestGroup:
-                    for participant2 in group.participants:
+                    for participant2 in group:
                         oldScore = self.calculateScore()
                         self.swapIndividuals(participant1, participant2)
                         newScore = self.calculateScore()
@@ -182,5 +202,6 @@ class Arrangement:
         # Only swap if we there is a better swap to make.
         if bestSwap[0] != None:
             self.swapIndividuals(bestSwap[0], bestSwap[1])
+            global_new_score = self.calculateScore()
         return bestGain
 
