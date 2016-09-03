@@ -5,16 +5,17 @@ import random
 from functools import reduce
 from .strategy import Strategy
 from .participant import Participant
-from functools import reduce
 
 class Arrangement:
     def __init__(self, json_arrangement, num_individuals_per_group = 4):
         self.groups = []
         self.participants = []
         self._create_participants(json_arrangement)
+
         # Sort participants. This at least guarantees predictability in initial setup
         # and is helpful for testing.
         self.participants = sorted(self.participants, key=lambda p: p.name.lower())
+
         numGroups = int(math.ceil(1.0 * len(self.participants) / num_individuals_per_group))
         for i in range(numGroups):
             self.groups.append([])
@@ -34,22 +35,6 @@ class Arrangement:
                     # print((participant.name + ' ' + json_arrangementType + ' ' + name))
                     participant.affinityDict[json_arrangementType](self.getParticipant(name))
 
-    def __repr__(self):
-        result = ''
-        averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
-        i = 0
-        result += "Arrangement with Score: " + str(self.score) + " "
-        result += "with average score: " + str(averageGroupScore) + '\n'
-        result += 'Participants:\n'
-        for participant in self.participants:
-            result += participant.name + ', '
-        result = result[:-2] + '\nGroups:\n'
-        for group in self.groups:
-            result += "Group " + str(i) + "\n"
-            result += group.__repr__() + '\n'
-            i += 1
-        result += '\n'
-        return result
 
     def optimize(self):
         self.makeBestSwapFromUnhappiestGroup()
@@ -63,14 +48,6 @@ class Arrangement:
 
     def getParticipant(self, name):
         return next(p for p in self.participants if p.name == name)
-
-    # TODO: Test
-    def removeParticipantFromGroup(self, participant):
-        group = participant.group
-        participant.removeFromGroup()
-        group.removeParticipant(participant)
-        group.getScore()
-
     def readParticipantsFromFile(self, filename):
         f = open(filename)
         survey = json.load(f)
@@ -97,26 +74,6 @@ class Arrangement:
         for surveyType in survey:
             for name in survey[surveyType][participant.name]:
                 participant.affinityDict[surveyType](self.getParticipant(name))
-
-    def swapRandomIndividuals(self):
-        numGroups = len(self.groups)
-        if numGroups == 1:
-            raise ValueError('Number of groups in arrangement must be greater than 1 for mutating.')
-
-        firstGroupIndex = random.randint(0, numGroups-1)
-        secondGroupIndex = random.randint(0, numGroups-1)
-        while secondGroupIndex == firstGroupIndex:
-            secondGroupIndex = random.randint(0, numGroups-1)
-
-        firstGroup = self.groups[firstGroupIndex]
-        secondGroup = self.groups[secondGroupIndex]
-
-        firstIndividualIndex = random.randint(0, len(firstGroup.participants) - 1)
-        secondIndividualIndex = random.randint(0, len(secondGroup.participants) - 1)
-
-        firstIndividual = self.groups[firstGroupIndex].participants[firstIndividualIndex]
-        self.groups[firstGroupIndex].participants[firstIndividualIndex] = self.groups[secondGroupIndex].participants[secondIndividualIndex]
-        self.groups[secondGroupIndex].participants[secondIndividualIndex] = firstIndividual
 
     def getUnhappiestGroup(self):
         group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
@@ -193,3 +150,19 @@ class Arrangement:
             global_new_score = self.calculateScore()
         return bestGain
 
+    def __repr__(self):
+        result = ''
+        averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
+        i = 0
+        result += "Arrangement with Score: " + str(self.score) + " "
+        result += "with average score: " + str(averageGroupScore) + '\n'
+        result += 'Participants:\n'
+        for participant in self.participants:
+            result += participant.name + ', '
+        result = result[:-2] + '\nGroups:\n'
+        for group in self.groups:
+            result += "Group " + str(i) + "\n"
+            result += group.__repr__() + '\n'
+            i += 1
+        result += '\n'
+        return result
