@@ -20,6 +20,16 @@ class Arrangement:
             self.groups[i % numGroups].append(self.participants[i])
         self.score = self.calculateScore()
 
+    def optimize(self):
+        self.makeBestSwapFromUnhappiestGroup()
+        self.makeBestSwapFromUnhappiestGroup()
+
+    def calculateScore(self):
+        total = 0
+        for group in self.groups:
+            total += self._get_group_score(group)
+        return total
+
     def _create_participants(self, json_arrangement):
         # There is no particular reason we use 'technical_refusals' here.
         # Each survey type has a full list of every name. That's all we need.
@@ -32,19 +42,9 @@ class Arrangement:
                     # print((participant.name + ' ' + json_arrangementType + ' ' + name))
                     participant.affinityDict[json_arrangementType](self.get_participant(name))
 
-
-    def optimize(self):
-        self.makeBestSwapFromUnhappiestGroup()
-        self.makeBestSwapFromUnhappiestGroup()
-
-    def calculateScore(self):
-        total = 0
-        for group in self.groups:
-            total += self._get_group_score(group)
-        return total
-
-    def getParticipant(self, name):
+    def get_participant(self, name):
         return next(p for p in self.participants if p.name == name)
+
     def readParticipantsFromFile(self, filename):
         f = open(filename)
         survey = json.load(f)
@@ -163,3 +163,4 @@ class Arrangement:
             i += 1
         result += '\n'
         return result
+
