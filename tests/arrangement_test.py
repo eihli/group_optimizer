@@ -6,9 +6,36 @@ import os
 import json
 
 class arrangementTestCase(unittest.TestCase):
+    pass
     def setUp(self):
         f = open('grouping_algo/sample_data/affinities.json')
         survey = json.load(f)
+        self.default_json_arrangement = {
+            "technical_refusals": {
+                "a": ["d"],
+                "b": [],
+                "c": ["f"],
+                "d": ["a"],
+                "e": [],
+                "f": []
+            },
+            "interpersonal_refusals": {
+                "a": [],
+                "b": [],
+                "c": [],
+                "d": [],
+                "e": [],
+                "f": ["c"]
+                },
+            "affinities": {
+                "a": ["f"],
+                "b": [],
+                "c": [],
+                "d": ["c"],
+                "e": [],
+                "f": []
+            }
+        }
         self.arrangement = Arrangement(survey)
         self.p1 = Participant("Eric")
         self.p2 = Participant("Sam")
@@ -16,6 +43,12 @@ class arrangementTestCase(unittest.TestCase):
         self.p4 = Participant("Taylor")
         self.g1 = Group()
         self.g2 = Group()
+
+    def test_optimize(self):
+        arrangement = Arrangement(self.default_json_arrangement)
+        arrangement.optimize()
+        self.assertEqual(arrangement.calculateScore(), 2)
+
 
     def test_arrangement_get_participant(self):
         self.arrangement.addParticipant(self.p1)
@@ -38,59 +71,14 @@ class arrangementTestCase(unittest.TestCase):
         # TODO: Finish arrangement scoring function/tests
 
     def test_get_unhappiest_group(self):
-        json_arrangement = {
-            "technical_refusals": {
-                "john": ["glenn"],
-                "glenn": [],
-                "eric": [],
-                "sam": []
-            },
-            "interpersonal_refusals": {
-                "john": [],
-                "glenn": [],
-                "eric": [],
-                "sam": []
-                },
-            "affinities": {
-                "eric": ["sam", "glenn"],
-                "john": [],
-                "sam": [],
-                "glenn": []
-            }
-        }
-        a = Arrangement(json_arrangement, 2)
-        self.assertEqual(a.getUnhappiestGroup(), a.groups[1])
+        a = Arrangement(self.default_json_arrangement, 2)
+        self.assertEqual(a.getUnhappiestGroup(), a.groups[2])
 
     def test_makes_best_swap_from_unhappiest_group(self):
-        json_arrangement = {
-            "technical_refusals": {
-                "a": ["d"],
-                "b": ["e"],
-                "c": [],
-                "d": ["a"],
-                "e": [],
-                "g": []
-            },
-            "interpersonal_refusals": {
-                "a": [],
-                "b": [],
-                "c": [],
-                "d": [],
-                "e": [],
-                "g": []
-                },
-            "affinities": {
-                "a": ["c"],
-                "b": ["g"],
-                "c": ["b"],
-                "d": [],
-                "e": [],
-                "g": ["b"]
-            }
-        }
-        a = Arrangement(json_arrangement, 2)
+        a = Arrangement(self.default_json_arrangement, 2)
+        self.assertEqual(a.calculateScore(), -400)
         a.makeBestSwapFromUnhappiestGroup()
-        self.assertEqual(a.calculateScore(), -99)
+        self.assertEqual(a.calculateScore(), -200)
         a.makeBestSwapFromUnhappiestGroup()
         self.assertEqual(a.calculateScore(), 1)
 
