@@ -21,8 +21,8 @@ class Arrangement:
         self.score = self.calculate_score()
 
     def optimize(self):
-        self.makeBestSwapFromUnhappiestGroup()
-        self.makeBestSwapFromUnhappiestGroup()
+        self.make_best_swap_from_unhappiest_group()
+        self.make_best_swap_from_unhappiest_group()
 
     def calculate_score(self):
         total = 0
@@ -124,8 +124,7 @@ class Arrangement:
                         for p2 in self.groups[j].participants:
                             self.swapIndividuals(p1, p2)
 
-    # This should be pulled out into a subclass or Arrangement Strategy or something.
-    def makeBestSwapFromUnhappiestGroup(self):
+    def make_best_swap_from_unhappiest_group(self):
         bestGain = 0
         bestSwap = (None, None)
         unhappiest_group = self.get_unhappiest_group()
@@ -141,7 +140,6 @@ class Arrangement:
                             bestGain = newScore - oldScore
                             bestSwap = (participant1, participant2)
                         self.swapIndividuals(participant1, participant2)
-        # Only swap if we there is a better swap to make.
         if bestSwap[0] != None:
             self.swapIndividuals(bestSwap[0], bestSwap[1])
             global_new_score = self.calculate_score()
