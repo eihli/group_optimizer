@@ -26,16 +26,17 @@ class Participant:
     return getattr(self, i)
 
   def __repr__(self):
-    result = 'Participant Name: ' + self.name + ':\n'
-    result += 'Affinities: \n'
+    result = '\nParticipant Name: ' + self.name + ': '
+    result += 'Affinities: '
     for affinity in self.affinities:
       result += affinity.name + ' '
-    result += '\nInterpersonal Refusals: \n'
+    result += ' - Interpersonal Refusals: '
     for interpersonalRefusal in self.interpersonalRefusals:
-      result += interpersonalRefusal.name + ' ' 
-    result += '\nTechnical Refusals: \n'
+      result += interpersonalRefusal.name + ' '
+    result += ' - Technical Refusals: '
     for technicalRefusal in self.technicalRefusals:
       result += technicalRefusal.name + ' '
+    result += '\n'
     return result
 
   def addAffinity(self, participant):
