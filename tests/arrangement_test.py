@@ -36,21 +36,11 @@ class ArrangementTestCase(unittest.TestCase):
                 "f": []
             }
         }
-        self.arrangement = Arrangement(survey)
-        self.p1 = Participant("Eric")
-        self.p2 = Participant("Sam")
-        self.p3 = Participant("Glenn")
-        self.p4 = Participant("Taylor")
 
     def test_optimize(self):
         arrangement = Arrangement(self.default_json_arrangement)
         arrangement.optimize()
         self.assertEqual(arrangement.calculateScore(), 2)
-
-    def test_arrangement_scoring_function(self):
-        self.arrangement.groups = []
-        group = Group()
-        # TODO: Finish arrangement scoring function/tests
 
     def test_get_unhappiest_group(self):
         a = Arrangement(self.default_json_arrangement, 2)
