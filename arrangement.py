@@ -30,7 +30,7 @@ class Arrangement:
                 for name in json_arrangement[json_arrangementType][participant.name]:
                     # set their affinity
                     # print((participant.name + ' ' + json_arrangementType + ' ' + name))
-                    participant.affinityDict[json_arrangementType](self.getParticipant(name))
+                    participant.affinityDict[json_arrangementType](self.get_participant(name))
 
 
     def optimize(self):
@@ -55,7 +55,7 @@ class Arrangement:
                 for name in survey[surveyType][participant.name]:
                     # set their affinity
                     # print((participant.name + ' ' + surveyType + ' ' + name))
-                    participant.affinityDict[surveyType](self.getParticipant(name))
+                    participant.affinityDict[surveyType](self.get_participant(name))
 
     def loadParticipantsFromJson(self, jsonString):
         survey = json.loads(jsonString)
@@ -70,7 +70,7 @@ class Arrangement:
     def set_affinities(survey, participant):
         for surveyType in survey:
             for name in survey[surveyType][participant.name]:
-                participant.affinityDict[surveyType](self.getParticipant(name))
+                participant.affinityDict[surveyType](self.get_participant(name))
 
     def getUnhappiestGroup(self):
         group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
