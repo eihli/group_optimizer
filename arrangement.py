@@ -26,7 +26,7 @@ class Arrangement:
         # There is no particular reason we use 'technical_refusals' here.
         # Each survey type has a full list of every name. That's all we need.
         for name in json_arrangement['technical_refusals']:
-            self.addParticipant(Participant(name))
+            self.participants.append(Participant(name))
         for participant in self.participants:
             for json_arrangementType in json_arrangement:
                 for name in json_arrangement[json_arrangementType][participant.name]:
