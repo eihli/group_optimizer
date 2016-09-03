@@ -18,13 +18,13 @@ class Arrangement:
             self.groups.append([])
         for i in range(len(self.participants)):
             self.groups[i % numGroups].append(self.participants[i])
-        self.score = self.calculateScore()
+        self.score = self.calculate_score()
 
     def optimize(self):
         self.makeBestSwapFromUnhappiestGroup()
         self.makeBestSwapFromUnhappiestGroup()
 
-    def calculateScore(self):
+    def calculate_score(self):
         total = 0
         for group in self.groups:
             total += self._get_group_score(group)
@@ -45,7 +45,7 @@ class Arrangement:
     def get_participant(self, name):
         return next(p for p in self.participants if p.name == name)
 
-    def readParticipantsFromFile(self, filename):
+    def read_participants_from_file(self, filename):
         f = open(filename)
         survey = json.load(f)
         for name in survey['technical_refusals']:
@@ -57,7 +57,7 @@ class Arrangement:
                     # print((participant.name + ' ' + surveyType + ' ' + name))
                     participant.affinityDict[surveyType](self.get_participant(name))
 
-    def loadParticipantsFromJson(self, jsonString):
+    def load_participants_from_json(self, jsonString):
         survey = json.loads(jsonString)
         # Doesn't matter which survey we use here.
         # We just need a list of all names
@@ -72,7 +72,7 @@ class Arrangement:
             for name in survey[surveyType][participant.name]:
                 participant.affinityDict[surveyType](self.get_participant(name))
 
-    def getUnhappiestGroup(self):
+    def get_unhappiest_group(self):
         group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
         return group
 
@@ -128,15 +128,15 @@ class Arrangement:
     def makeBestSwapFromUnhappiestGroup(self):
         bestGain = 0
         bestSwap = (None, None)
-        unhappiestGroup = self.getUnhappiestGroup()
-        global_old_score = self.calculateScore()
-        for participant1 in unhappiestGroup:
+        unhappiest_group = self.get_unhappiest_group()
+        global_old_score = self.calculate_score()
+        for participant1 in unhappiest_group:
             for group in self.groups:
-                if group != unhappiestGroup:
+                if group != unhappiest_group:
                     for participant2 in group:
-                        oldScore = self.calculateScore()
+                        oldScore = self.calculate_score()
                         self.swapIndividuals(participant1, participant2)
-                        newScore = self.calculateScore()
+                        newScore = self.calculate_score()
                         if newScore >= oldScore:
                             bestGain = newScore - oldScore
                             bestSwap = (participant1, participant2)
@@ -144,7 +144,7 @@ class Arrangement:
         # Only swap if we there is a better swap to make.
         if bestSwap[0] != None:
             self.swapIndividuals(bestSwap[0], bestSwap[1])
-            global_new_score = self.calculateScore()
+            global_new_score = self.calculate_score()
         return bestGain
 
     def __repr__(self):

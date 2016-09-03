@@ -40,17 +40,17 @@ class ArrangementTestCase(unittest.TestCase):
     def test_optimize(self):
         arrangement = Arrangement(self.default_json_arrangement)
         arrangement.optimize()
-        self.assertEqual(arrangement.calculateScore(), 2)
+        self.assertEqual(arrangement.calculate_score(), 2)
 
     def test_get_unhappiest_group(self):
         a = Arrangement(self.default_json_arrangement, 2)
-        self.assertEqual(a.getUnhappiestGroup(), a.groups[2])
+        self.assertEqual(a.get_unhappiest_group(), a.groups[2])
 
     def test_makes_best_swap_from_unhappiest_group(self):
         a = Arrangement(self.default_json_arrangement, 2)
-        self.assertEqual(a.calculateScore(), -400)
+        self.assertEqual(a.calculate_score(), -400)
         a.makeBestSwapFromUnhappiestGroup()
-        self.assertEqual(a.calculateScore(), -200)
+        self.assertEqual(a.calculate_score(), -200)
         a.makeBestSwapFromUnhappiestGroup()
-        self.assertEqual(a.calculateScore(), 1)
+        self.assertEqual(a.calculate_score(), 1)
 
