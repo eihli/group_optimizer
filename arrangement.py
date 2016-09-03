@@ -1,9 +1,6 @@
 import json
-import pdb
 import math
-import random
 from functools import reduce
-from .strategy import Strategy
 from .participant import Participant
 
 class Arrangement:
