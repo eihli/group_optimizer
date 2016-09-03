@@ -64,14 +64,6 @@ class Arrangement:
     def getParticipant(self, name):
         return next(p for p in self.participants if p.name == name)
 
-    def addParticipant(self, participant):
-        self.participants.append(participant)
-
-    def addParticipantToGroup(self, participant, group):
-        participant.addToGroup(group)
-        group.addParticipant(participant)
-        group.getScore()
-
     # TODO: Test
     def removeParticipantFromGroup(self, participant):
         group = participant.group
@@ -83,7 +75,7 @@ class Arrangement:
         f = open(filename)
         survey = json.load(f)
         for name in survey['technical_refusals']:
-            self.addParticipant(Participant(name))
+            self.participants.append(Participant(name))
         for participant in self.participants:
             for surveyType in survey:
                 for name in survey[surveyType][participant.name]:
@@ -96,7 +88,7 @@ class Arrangement:
         # Doesn't matter which survey we use here.
         # We just need a list of all names
         for name in survey['technical_refusals']:
-            self.addParticipant(Participant(name))
+            self.participants.append(Participant(name))
         for participant in self.participants:
             set_affinities(survey, participant)
 
@@ -105,10 +97,6 @@ class Arrangement:
         for surveyType in survey:
             for name in survey[surveyType][participant.name]:
                 participant.affinityDict[surveyType](self.getParticipant(name))
-
-    def assignParticipantsToGroups(self):
-        for i in range(len(self.participants)):
-            self.addParticipantToGroup(self.participants[i], self.groups[i % numGroups])
 
     def swapRandomIndividuals(self):
         numGroups = len(self.groups)

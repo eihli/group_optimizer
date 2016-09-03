@@ -5,7 +5,7 @@ from ..participant import Participant
 import os
 import json
 
-class arrangementTestCase(unittest.TestCase):
+class ArrangementTestCase(unittest.TestCase):
     pass
     def setUp(self):
         f = open('grouping_algo/sample_data/affinities.json')
@@ -41,29 +41,11 @@ class arrangementTestCase(unittest.TestCase):
         self.p2 = Participant("Sam")
         self.p3 = Participant("Glenn")
         self.p4 = Participant("Taylor")
-        self.g1 = Group()
-        self.g2 = Group()
 
     def test_optimize(self):
         arrangement = Arrangement(self.default_json_arrangement)
         arrangement.optimize()
         self.assertEqual(arrangement.calculateScore(), 2)
-
-
-    def test_arrangement_get_participant(self):
-        self.arrangement.addParticipant(self.p1)
-        participant = self.arrangement.getParticipant('Eric')
-        self.assertIsInstance(self.arrangement.getParticipant('Eric'), Participant)
-
-    def test_arrangement_add_participant(self):
-        self.arrangement.addParticipant(self.p1)
-        self.assertIsInstance(self.arrangement.participants[0], Participant)
-
-    def test_arrangement_can_add_participant_to_group(self):
-        self.arrangement.groups[0] = self.g1
-        self.arrangement.addParticipantToGroup(self.p1, self.g1)
-        self.assertIs(self.arrangement.groups[0].participants[0], self.p1)
-        self.assertIs(self.p1.group, self.g1)
 
     def test_arrangement_scoring_function(self):
         self.arrangement.groups = []
