@@ -1,7 +1,12 @@
+import sys
+from pathlib import Path
+root = str(Path(__file__).resolve().parents[1])
+sys.path.append(root)
+
 import json
 import math
 from functools import reduce
-from .participant import Participant
+from grouping_algo.participant import Participant
 
 class Arrangement:
     def __init__(self, json_arrangement, num_individuals_per_group = 4):
@@ -18,9 +23,15 @@ class Arrangement:
             self.groups[i % numGroups].append(participant)
             i += 1
 
-    def optimize(self):
-        self.make_best_swap_from_unhappiest_group()
-        self.make_best_swap_from_unhappiest_group()
+    def optimize(self, prev_score = None):
+        i = 0
+        while True:
+            self.make_best_swap_from_unhappiest_group()
+            cur_score = self.get_score()
+            if cur_score == prev_score or i > 20:
+                return self.groups
+            i += 1
+            self.optimize(cur_score)
 
     def get_score(self):
         total = 0

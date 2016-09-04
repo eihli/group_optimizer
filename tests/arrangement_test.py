@@ -55,7 +55,7 @@ class ArrangementTestCase(unittest.TestCase):
     def test_optimize(self):
         arrangement = Arrangement(self.default_json_arrangement, 2)
         arrangement.optimize()
-        self.assertEqual(arrangement.get_score(), 1)
+        self.assertEqual(arrangement.get_score(), 2)
 
     def test_get_unhappiest_group(self):
         a = Arrangement(self.default_json_arrangement, 2)
