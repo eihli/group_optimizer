@@ -26,7 +26,7 @@ class GrouperTestCase(unittest.TestCase):
 
 
     def test_group(self):
-        Grouper.group(self.tmp_dir + '/input.csv', self.tmp_dir + '/output.csv')
+        Grouper.group(self.tmp_dir + '/input.csv', self.tmp_dir + '/output.csv', 2)
         self.assertTrue(os.path.exists(self.tmp_dir + '/output.csv'), "Expected 'group' to create output file but none existed")
         with open(self.tmp_dir + '/output.csv', 'r') as result_file:
             csv_reader = csv.reader(result_file)

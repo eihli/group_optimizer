@@ -5,8 +5,8 @@ sys.path.append(root)
 
 import time
 import logging
-from arrangement import Arrangement
-from arrangement_formatter import ArrangementFormatter
+from grouping_algo.arrangement import Arrangement
+from grouping_algo.arrangement_formatter import ArrangementFormatter
 
 NUM_ITERATIONS = 10
 TIMEOUT = 200
@@ -23,10 +23,10 @@ class Grouper:
         self.csv = None
 
     @staticmethod
-    def group(input_filename, output_filename):
+    def group(input_filename, output_filename, num_participants_per_group = 4):
         with open(input_filename, 'r') as survey_responses:
             arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(survey_responses)
-            arrangement = Arrangement(arrangement_dict)
+            arrangement = Arrangement(arrangement_dict, num_participants_per_group)
             arrangement.optimize()
 
         with open(output_filename, 'w') as csv_file:
