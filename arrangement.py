@@ -13,7 +13,7 @@ class Arrangement:
         self.groups = []
         self.participants = json_arrangement
 
-        numGroups = math.ceil(1.0 * len(self.participants) / num_individuals_per_group)
+        numGroups = int(math.ceil(1.0 * len(self.participants) / num_individuals_per_group))
 
         for i in range(numGroups):
             self.groups.append([])
