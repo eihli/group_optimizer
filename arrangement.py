@@ -30,6 +30,27 @@ class Arrangement:
             total += self._get_group_score(group)
         return total
 
+    def make_best_swap_from_unhappiest_group(self):
+        bestGain = 0
+        bestSwap = (None, None)
+        unhappiest_group = self.get_unhappiest_group()
+        global_old_score = self.calculate_score()
+        for participant1 in unhappiest_group:
+            for group in self.groups:
+                if group != unhappiest_group:
+                    for participant2 in group:
+                        oldScore = self.calculate_score()
+                        self._swap_individuals(participant1, participant2)
+                        newScore = self.calculate_score()
+                        if newScore >= oldScore:
+                            bestGain = newScore - oldScore
+                            bestSwap = (participant1, participant2)
+                        self._swap_individuals(participant1, participant2)
+        if bestSwap[0] != None:
+            self._swap_individuals(bestSwap[0], bestSwap[1])
+            global_new_score = self.calculate_score()
+        return bestGain
+
     def _create_participants(self, json_arrangement):
         # There is no particular reason we use 'technical_refusals' here.
         # Each survey type has a full list of every name. That's all we need.
@@ -89,9 +110,7 @@ class Arrangement:
                         score -= 100
         return score
 
-
-    # TODO: Test
-    def swapIndividuals(self, a, b):
+    def _swap_individuals(self, a, b):
         aGroupIndex = self._find_group_index_for_participant(a)
         bGroupIndex = self._find_group_index_for_participant(b)
         aGroup = self.groups[aGroupIndex]
@@ -122,28 +141,7 @@ class Arrangement:
                 for j in range(len(self.groups)):
                     if not i == j:
                         for p2 in self.groups[j].participants:
-                            self.swapIndividuals(p1, p2)
-
-    def make_best_swap_from_unhappiest_group(self):
-        bestGain = 0
-        bestSwap = (None, None)
-        unhappiest_group = self.get_unhappiest_group()
-        global_old_score = self.calculate_score()
-        for participant1 in unhappiest_group:
-            for group in self.groups:
-                if group != unhappiest_group:
-                    for participant2 in group:
-                        oldScore = self.calculate_score()
-                        self.swapIndividuals(participant1, participant2)
-                        newScore = self.calculate_score()
-                        if newScore >= oldScore:
-                            bestGain = newScore - oldScore
-                            bestSwap = (participant1, participant2)
-                        self.swapIndividuals(participant1, participant2)
-        if bestSwap[0] != None:
-            self.swapIndividuals(bestSwap[0], bestSwap[1])
-            global_new_score = self.calculate_score()
-        return bestGain
+                            self._swap_individuals(p1, p2)
 
     def __repr__(self):
         result = ''
