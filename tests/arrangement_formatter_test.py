@@ -95,7 +95,7 @@ class ArrangementFormatterTest(unittest.TestCase):
 
     def test_create_csv_from_groups(self):
         with open(self.tmp_dir + '/output.csv', 'w') as f:
-            csv_file = ArrangementFormatter.create_csv_from_groups(self.arrangement, self.groups, f)
+            csv_file = ArrangementFormatter.create_csv_from_groups(self.groups, f)
             self.assertTrue(hasattr(csv_file, 'read'), "Expected csv to be an instance of file but it doesnt' have the 'read' method.")
 
         with open(self.tmp_dir + '/output.csv', 'r') as f:

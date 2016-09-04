@@ -1,7 +1,5 @@
 import unittest
 from grouping_algo.arrangement import Arrangement
-from ..group import Group
-from ..participant import Participant
 import os
 import json
 

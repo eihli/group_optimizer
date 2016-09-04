@@ -6,7 +6,6 @@ sys.path.append(root)
 import json
 import math
 from functools import reduce
-from grouping_algo.participant import Participant
 
 class Arrangement:
     def __init__(self, json_arrangement, num_individuals_per_group = 4):
