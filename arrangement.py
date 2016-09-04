@@ -49,47 +49,6 @@ class Arrangement:
             global_new_score = self.calculate_score()
         return bestGain
 
-    def _create_participants(self, json_arrangement):
-        for idx, participant in json_arrangement.items():
-            self.participants[idx] = name
-        for key, name in self.participants.items():
-            for json_arrangementType in json_arrangement:
-                self.participants[key][json_arrangementType] = []
-                for target_name in json_arrangement[json_arrangementType][name]:
-                    # set their affinity
-                    self.participants[key][json_arrangementType].append()
-                    participant.affinityDict[json_arrangementType](self.get_participant(name))
-
-    def get_participant(self, name):
-        return next(p for p in self.participants if p.name == name)
-
-    def read_participants_from_file(self, filename):
-        f = open(filename)
-        survey = json.load(f)
-        for name in survey['technical_refusals']:
-            self.participants.append(Participant(name))
-        for participant in self.participants:
-            for surveyType in survey:
-                for name in survey[surveyType][participant.name]:
-                    # set their affinity
-                    # print((participant.name + ' ' + surveyType + ' ' + name))
-                    participant.affinityDict[surveyType](self.get_participant(name))
-
-    def load_participants_from_json(self, jsonString):
-        survey = json.loads(jsonString)
-        # Doesn't matter which survey we use here.
-        # We just need a list of all names
-        for name in survey['technical_refusals']:
-            self.participants.append(Participant(name))
-        for participant in self.participants:
-            set_affinities(survey, participant)
-
-    @staticmethod
-    def set_affinities(survey, participant):
-        for surveyType in survey:
-            for name in survey[surveyType][participant.name]:
-                participant.affinityDict[surveyType](self.get_participant(name))
-
     def get_unhappiest_group(self):
         group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
         return group
@@ -143,16 +102,13 @@ class Arrangement:
     def __repr__(self):
         result = ''
         averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
-        i = 0
-        result += "Arrangement with Score: " + str(self.score) + " "
+        result += "Arrangement with Score: " + str(self.calculate_score()) + " "
         result += "with average score: " + str(averageGroupScore) + '\n'
-        result += 'Participants:\n'
-        for participant in self.participants:
-            result += participant.name + ', '
-        result = result[:-2] + '\nGroups:\n'
+        result += '\nGroups:\n'
+        i = 0
         for group in self.groups:
             result += "Group " + str(i) + "\n"
-            result += group.__repr__() + '\n'
+            result += group + '\n'
             i += 1
         result += '\n'
         return result
