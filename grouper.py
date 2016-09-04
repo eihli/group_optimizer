@@ -3,20 +3,8 @@ from pathlib import Path
 root = str(Path(__file__).resolve().parents[1])
 sys.path.append(root)
 
-import time
-import logging
 from grouping_algo.arrangement import Arrangement
 from grouping_algo.arrangement_formatter import ArrangementFormatter
-
-NUM_ITERATIONS = 10
-TIMEOUT = 200
-
-logger = logging.getLogger()
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s %(levelname) %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
 
 class Grouper:
     def __init__(self):
