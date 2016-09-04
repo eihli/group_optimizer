@@ -2,6 +2,7 @@ import unittest
 import shutil
 import os
 import time
+import csv
 from ..arrangement_formatter import ArrangementFormatter
 from ..participant import Participant
 
@@ -29,6 +30,11 @@ class ArrangementFormatterTest(unittest.TestCase):
 
     def test_export_groups_to_csv(self):
         with open(self.tmp_dir + '/output.csv', 'w') as f:
-            csv = ArrangementFormatter.create_csv_from_groups(self.groups, f)
-            self.assertTrue(hasattr(csv, 'read'), "Expected csv to be an instance of file but it doesnt' have the 'read' method.")
+            csv_file = ArrangementFormatter.create_csv_from_groups(self.groups, f)
+            self.assertTrue(hasattr(csv_file, 'read'), "Expected csv to be an instance of file but it doesnt' have the 'read' method.")
+
+        with open(self.tmp_dir + '/output.csv', 'r') as f:
+            csv_reader = csv.reader(f)
+            first_line = next(csv_reader)
+            self.assertEqual(first_line, ['Group 1:', 'a', 'd'])
 
