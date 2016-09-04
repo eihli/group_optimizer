@@ -3,6 +3,7 @@ import shutil
 import os
 import time
 import csv
+from functools import reduce
 from ..arrangement_formatter import ArrangementFormatter
 
 class ArrangementFormatterTest(unittest.TestCase):
@@ -72,7 +73,27 @@ class ArrangementFormatterTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp_dir)
 
-    def test_export_groups_to_csv(self):
+    def test_create_arrangement_from_csv(self):
+        with open(self.tmp_dir + '/input.csv', 'w') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerow(['', 'a', 'b', 'c'])
+            csv_writer.writerow(['a', '', '1', '-1'])
+            csv_writer.writerow(['b', '1', '', '-1'])
+            csv_writer.writerow(['c', '', '', ''])
+
+        with open(self.tmp_dir + '/input.csv', 'r') as f:
+            arrangement = ArrangementFormatter.create_arrangement_from_csv(f)
+            participant = reduce(lambda x, p: p if p['id'] == 0 and x == None else x, arrangement, None)
+
+            self.assertEqual(participant['name'], 'a')
+            self.assertEqual(participant['technical_refusals'], [2])
+            self.assertEqual(participant['affinities'], [1])
+
+            participant = reduce(lambda x, p: p if p['id'] == 1 and x == None else x, arrangement, None)
+            self.assertEqual(participant['name'], 'b')
+            self.assertEqual(participant['affinities'], [0])
+
+    def test_create_csv_from_groups(self):
         with open(self.tmp_dir + '/output.csv', 'w') as f:
             csv_file = ArrangementFormatter.create_csv_from_groups(self.arrangement, self.groups, f)
             self.assertTrue(hasattr(csv_file, 'read'), "Expected csv to be an instance of file but it doesnt' have the 'read' method.")
