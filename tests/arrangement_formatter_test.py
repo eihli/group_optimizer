@@ -4,7 +4,6 @@ import os
 import time
 import csv
 from ..arrangement_formatter import ArrangementFormatter
-from ..participant import Participant
 
 class ArrangementFormatterTest(unittest.TestCase):
     def setUp(self):
@@ -36,5 +35,8 @@ class ArrangementFormatterTest(unittest.TestCase):
         with open(self.tmp_dir + '/output.csv', 'r') as f:
             csv_reader = csv.reader(f)
             first_line = next(csv_reader)
-            self.assertEqual(first_line, ['Group 1:', 'a', 'd'])
+            self.assertEqual(first_line, ['Group 0:', '', '0: a', '3: d'])
+
+            second_line = next(csv_reader)
+            self.assertEqual(second_line, ['Group 1:', '', '1: b', '4: e'])
 
