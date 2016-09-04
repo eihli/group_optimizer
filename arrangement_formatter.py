@@ -28,18 +28,18 @@ class ArrangementFormatter:
         return arrangement
 
     @staticmethod
-    def create_csv_from_groups(arrangement, groups, output_file):
+    def create_csv_from_groups(groups, output_file):
         csv_writer = csv.writer(output_file)
         for i, group in enumerate(groups):
             csv_writer.writerow(['Group ' + str(i) + ':', ''] + _get_group_header(group))
             for participant in group:
-                csv_writer.writerow(_get_participant_row(participant, group, arrangement))
+                csv_writer.writerow(_get_participant_row(participant, group))
         return output_file 
 
 def _get_group_header(group):
     return list(map(lambda p: str(p['id']) + ': ' + p['name'], group))
 
-def _get_participant_row(participant, group, arrangement):
+def _get_participant_row(participant, group):
     header_columns = _get_group_header(group)
     row = []
     for column in header_columns:
