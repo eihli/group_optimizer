@@ -22,15 +22,13 @@ class Arrangement:
             self.groups[i % numGroups].append(participant)
             i += 1
 
-    def optimize(self, prev_score = None):
-        i = 0
-        while True:
-            self.make_best_swap_from_unhappiest_group()
-            cur_score = self.get_score()
-            if cur_score == prev_score or i > 20:
-                return self.groups
-            i += 1
-            self.optimize(cur_score)
+    def optimize(self, prev_score = None, count = 0):
+        self.make_best_swap_from_unhappiest_group()
+        cur_score = self.get_score()
+        if cur_score == prev_score or count > 100:
+            return self.groups
+        count += 1
+        self.optimize(cur_score, count)
 
     def get_score(self):
         total = 0
@@ -42,7 +40,6 @@ class Arrangement:
         bestGain = 0
         bestSwap = (None, None)
         unhappiest_group = self.get_unhappiest_group()
-        global_old_score = self.get_score()
         for participant1 in unhappiest_group:
             for group in self.groups:
                 if group != unhappiest_group:
@@ -50,13 +47,12 @@ class Arrangement:
                         oldScore = self.get_score()
                         self._swap_individuals(participant1, participant2)
                         newScore = self.get_score()
-                        if newScore >= oldScore:
+                        if newScore > oldScore:
                             bestGain = newScore - oldScore
                             bestSwap = (participant1, participant2)
                         self._swap_individuals(participant1, participant2)
         if bestSwap[0] != None:
             self._swap_individuals(bestSwap[0], bestSwap[1])
-            global_new_score = self.get_score()
         return bestGain
 
     def get_unhappiest_group(self):
