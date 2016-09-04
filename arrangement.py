@@ -22,7 +22,7 @@ class Arrangement:
         self.make_best_swap_from_unhappiest_group()
         self.make_best_swap_from_unhappiest_group()
 
-    def calculate_score(self):
+    def get_score(self):
         total = 0
         for group in self.groups:
             total += self._get_group_score(group)
@@ -32,21 +32,21 @@ class Arrangement:
         bestGain = 0
         bestSwap = (None, None)
         unhappiest_group = self.get_unhappiest_group()
-        global_old_score = self.calculate_score()
+        global_old_score = self.get_score()
         for participant1 in unhappiest_group:
             for group in self.groups:
                 if group != unhappiest_group:
                     for participant2 in group:
-                        oldScore = self.calculate_score()
+                        oldScore = self.get_score()
                         self._swap_individuals(participant1, participant2)
-                        newScore = self.calculate_score()
+                        newScore = self.get_score()
                         if newScore >= oldScore:
                             bestGain = newScore - oldScore
                             bestSwap = (participant1, participant2)
                         self._swap_individuals(participant1, participant2)
         if bestSwap[0] != None:
             self._swap_individuals(bestSwap[0], bestSwap[1])
-            global_new_score = self.calculate_score()
+            global_new_score = self.get_score()
         return bestGain
 
     def get_unhappiest_group(self):
@@ -102,7 +102,7 @@ class Arrangement:
     def __repr__(self):
         result = ''
         averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
-        result += "Arrangement with Score: " + str(self.calculate_score()) + " "
+        result += "Arrangement with Score: " + str(self.get_score()) + " "
         result += "with average score: " + str(averageGroupScore) + '\n'
         result += '\nGroups:\n'
         i = 0
