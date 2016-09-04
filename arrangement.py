@@ -6,19 +6,17 @@ from .participant import Participant
 class Arrangement:
     def __init__(self, json_arrangement, num_individuals_per_group = 4):
         self.groups = []
-        self.participants = []
-        self._create_participants(json_arrangement)
+        self.participants = json_arrangement
 
-        # Sort participants. This at least guarantees predictability in initial setup
-        # and is helpful for testing.
-        self.participants = sorted(self.participants, key=lambda p: p.name.lower())
+        numGroups = math.ceil(1.0 * len(self.participants) / num_individuals_per_group)
 
-        numGroups = int(math.ceil(1.0 * len(self.participants) / num_individuals_per_group))
         for i in range(numGroups):
             self.groups.append([])
-        for i in range(len(self.participants)):
-            self.groups[i % numGroups].append(self.participants[i])
-        self.score = self.calculate_score()
+
+        i = 0
+        for participant in self.participants:
+            self.groups[i % numGroups].append(participant)
+            i += 1
 
     def optimize(self):
         self.make_best_swap_from_unhappiest_group()
@@ -52,15 +50,14 @@ class Arrangement:
         return bestGain
 
     def _create_participants(self, json_arrangement):
-        # There is no particular reason we use 'technical_refusals' here.
-        # Each survey type has a full list of every name. That's all we need.
-        for name in json_arrangement['technical_refusals']:
-            self.participants.append(Participant(name))
-        for participant in self.participants:
+        for idx, participant in json_arrangement.items():
+            self.participants[idx] = name
+        for key, name in self.participants.items():
             for json_arrangementType in json_arrangement:
-                for name in json_arrangement[json_arrangementType][participant.name]:
+                self.participants[key][json_arrangementType] = []
+                for target_name in json_arrangement[json_arrangementType][name]:
                     # set their affinity
-                    # print((participant.name + ' ' + json_arrangementType + ' ' + name))
+                    self.participants[key][json_arrangementType].append()
                     participant.affinityDict[json_arrangementType](self.get_participant(name))
 
     def get_participant(self, name):
@@ -101,12 +98,12 @@ class Arrangement:
         score = 0
         for participant1 in group:
             for participant2 in group:
-                if participant1 != participant2:
-                    if participant2 in participant1.affinities:
+                if participant1['id'] != participant2['id']:
+                    if participant2['id'] in participant1['affinities']:
                         score += 1
-                    if participant2 in participant1.technicalRefusals:
+                    if participant2['id'] in participant1['technical_refusals']:
                         score -= 100
-                    if participant2 in participant1.interpersonalRefusals:
+                    if participant2['id'] in participant1['interpersonal_refusals']:
                         score -= 100
         return score
 
