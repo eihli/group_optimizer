@@ -3,6 +3,7 @@ import time
 import os
 import csv
 import shutil
+from tempfile import TemporaryFile
 from ..grouper import Grouper
 
 class GrouperTestCase(unittest.TestCase):
@@ -35,3 +36,28 @@ class GrouperTestCase(unittest.TestCase):
 
             second_row = next(csv_reader)
             self.assertEqual(second_row, ['', '0: a', '', '1'])
+
+class GrouperFileTestCase(unittest.TestCase):
+    def setUp(self):
+        self.out_file = TemporaryFile('w+')
+        self.csv_file = TemporaryFile('w+')
+        csv_writer = csv.writer(self.csv_file)
+        csv_writer.writerow(['', 'a', 'b', 'c', 'd', 'e', 'f'])
+        csv_writer.writerow(['a', '', '', '', '-1', '', '1'])
+        csv_writer.writerow(['b', '', '', '', '', '-1', ''])
+        csv_writer.writerow(['c', '', '', '', '1', '', ''])
+        csv_writer.writerow(['d', '-1', '', '', '', '', ''])
+        csv_writer.writerow(['e', '', '', '', '', '', ''])
+        csv_writer.writerow(['f', '1', '', '', '', '', ''])
+        self.csv_file.seek(0)
+
+    def tearDown(self):
+        self.out_file.close()
+        self.csv_file.close()
+
+    def test_optimize(self):
+        grouper = Grouper(self.csv_file, self.out_file, 2)
+        score = grouper.optimize()
+        self.assertEqual(score, -97)
+        score = grouper.optimize()
+        self.assertEqual(score, 2)

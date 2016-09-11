@@ -7,8 +7,11 @@ from grouping_algo.arrangement import Arrangement
 from grouping_algo.arrangement_formatter import ArrangementFormatter
 
 class Grouper:
-    def __init__(self):
+    def __init__(self, in_file, out_file, num_participants_per_group = 4):
         self.csv = None
+        self.arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(in_file)
+        self.arrangement = Arrangement(self.arrangement_dict, num_participants_per_group)
+
 
     @staticmethod
     def group(input_filename, output_filename, num_participants_per_group = 4):
@@ -20,3 +23,6 @@ class Grouper:
         with open(output_filename, 'w') as csv_file:
             ArrangementFormatter.create_csv_from_groups(arrangement.groups, csv_file)
 
+    def optimize(self):
+        self.arrangement.make_best_swap_from_unhappiest_group()
+        return self.arrangement.get_score()
