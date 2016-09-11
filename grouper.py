@@ -11,6 +11,8 @@ class Grouper:
         self.csv = None
         self.arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(in_file)
         self.arrangement = Arrangement(self.arrangement_dict, num_participants_per_group)
+        self.last_score = float('-inf')
+        self.current_score = self.arrangement.get_score()
 
 
     @staticmethod
@@ -25,4 +27,10 @@ class Grouper:
 
     def optimize(self):
         self.arrangement.make_best_swap_from_unhappiest_group()
-        return self.arrangement.get_score()
+        self.last_score = self.current_score
+        self.current_score = self.arrangement.get_score()
+        return self.current_score
+
+    def is_optimized(self):
+        return self.last_score == self.arrangement.get_score()
+

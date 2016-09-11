@@ -4,6 +4,7 @@ from functools import reduce
 class ArrangementFormatter:
     @staticmethod
     def create_arrangement_from_csv(csv_file):
+        csv_file.seek(0)
         csv_reader = csv.reader(csv_file)
         header_row = next(csv_reader)[1:]
         arrangement = []
