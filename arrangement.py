@@ -33,7 +33,7 @@ class Arrangement:
     def get_score(self):
         total = 0
         for group in self.groups:
-            total += self._get_group_score(group)
+            total += _get_group_score(group)
         return total
 
     def make_best_swap_from_unhappiest_group(self):
@@ -56,21 +56,8 @@ class Arrangement:
         return bestGain
 
     def get_unhappiest_group(self):
-        group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
+        group = reduce(lambda g, a: g if _get_group_score(g) < _get_group_score(a) else a, self.groups)
         return group
-
-    def _get_group_score(self, group):
-        score = 0
-        for participant1 in group:
-            for participant2 in group:
-                if participant1['id'] != participant2['id']:
-                    if participant2['id'] in participant1['affinities']:
-                        score += 1
-                    if participant2['id'] in participant1['technical_refusals']:
-                        score -= 100
-                    if participant2['id'] in participant1['interpersonal_refusals']:
-                        score -= 100
-        return score
 
     def _swap_individuals(self, a, b):
         aGroupIndex = self._find_group_index_for_participant(a)
@@ -107,7 +94,7 @@ class Arrangement:
 
     def __repr__(self):
         result = ''
-        averageGroupScore = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
+        averageGroupScore = reduce(lambda x, y: x + _get_group_score(y), self.groups, 0) / len(self.groups)
         result += "Arrangement with Score: " + str(self.get_score()) + " "
         result += "with average score: " + str(averageGroupScore) + '\n'
         result += '\nGroups:\n'
@@ -118,4 +105,18 @@ class Arrangement:
             i += 1
         result += '\n'
         return result
+
+def _get_group_score(group):
+    score = 0
+    for participant1 in group:
+        for participant2 in group:
+            if participant1['id'] != participant2['id']:
+                if participant2['id'] in participant1['affinities']:
+                    score += 1
+                if participant2['id'] in participant1['technical_refusals']:
+                    score -= 100
+                if participant2['id'] in participant1['interpersonal_refusals']:
+                    score -= 100
+    return score
+
 

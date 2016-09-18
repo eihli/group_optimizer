@@ -32,10 +32,23 @@ class ArrangementFormatter:
     def create_csv_from_groups(groups, output_file):
         csv_writer = csv.writer(output_file)
         for i, group in enumerate(groups):
-            csv_writer.writerow(['Group ' + str(i) + ':', ''] + _get_group_header(group))
+            csv_writer.writerow(['Group ' + str(i) + ':', 'Happiness Score: ' + str(_get_group_score(group))] + _get_group_header(group))
             for participant in group:
                 csv_writer.writerow(_get_participant_row(participant, group))
-        return output_file 
+        return output_file
+
+def _get_group_score(group):
+    score = 0
+    for participant1 in group:
+        for participant2 in group:
+            if participant1['id'] != participant2['id']:
+                if participant2['id'] in participant1['affinities']:
+                    score += 1
+                if participant2['id'] in participant1['technical_refusals']:
+                    score -= 100
+                if participant2['id'] in participant1['interpersonal_refusals']:
+                    score -= 100
+    return score
 
 def _get_group_header(group):
     return list(map(lambda p: str(p['id']) + ': ' + p['name'], group))
