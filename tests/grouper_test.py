@@ -32,7 +32,7 @@ class GrouperTestCase(unittest.TestCase):
         with open(self.tmp_dir + '/output.csv', 'r') as result_file:
             csv_reader = csv.reader(result_file)
             first_row = next(csv_reader)
-            self.assertEqual(first_row, ['Group 0:', '', '0: a', '5: f'])
+            self.assertEqual(first_row, ['Group 0:', 'Happiness Score: 2', '0: a', '5: f'])
 
             second_row = next(csv_reader)
             self.assertEqual(second_row, ['', '0: a', '', '1'])
