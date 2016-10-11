@@ -2,6 +2,9 @@
 
 ##Current State
 
+- README needs to be updated
+- Handle requirements through requirements.txt and pip install or setup.py or something
+
 ###Requirements
 
 - `pip install names` - Requires `names` to generate random sample data.
