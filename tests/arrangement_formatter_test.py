@@ -101,7 +101,7 @@ class ArrangementFormatterTest(unittest.TestCase):
         with open(self.tmp_dir + '/output.csv', 'r') as f:
             csv_reader = csv.reader(f)
             first_line = next(csv_reader)
-            self.assertEqual(first_line, ['Group 0:', '', '0: a', '3: d'])
+            self.assertEqual(first_line, ['Group 0:', 'Happiness Score: -200', '0: a', '3: d'])
 
             second_line = next(csv_reader)
             self.assertEqual(second_line, ['', '0: a', '', '-1'])
@@ -110,7 +110,7 @@ class ArrangementFormatterTest(unittest.TestCase):
             self.assertEqual(third_line, ['', '3: d', '-1', ''])
 
             fourth_line = next(csv_reader)
-            self.assertEqual(fourth_line, ['Group 1:', '', '1: b', '4: e'])
+            self.assertEqual(fourth_line, ['Group 1:', 'Happiness Score: 0', '1: b', '4: e'])
 
             fifth_line = next(csv_reader)
             self.assertEqual(fifth_line, ['', '1: b', '', ''])
