@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(
-    name='group-optimizer',
+    name='group_optimizer',
     version='0.1',
     description='Optimal grouping utilities and algorithms.',
     author='Eric Ihli',
