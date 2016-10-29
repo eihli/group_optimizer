@@ -4,7 +4,7 @@ import os
 import time
 import csv
 from functools import reduce
-from ..arrangement_formatter import ArrangementFormatter
+from group_optimizer.arrangement_formatter import ArrangementFormatter
 
 class ArrangementFormatterTest(unittest.TestCase):
     def setUp(self):

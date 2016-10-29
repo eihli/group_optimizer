@@ -3,8 +3,8 @@ from pathlib import Path
 root = str(Path(__file__).resolve().parents[1])
 sys.path.append(root)
 
-from grouping_algo.arrangement import Arrangement
-from grouping_algo.arrangement_formatter import ArrangementFormatter
+from group_optimizer.arrangement import Arrangement
+from group_optimizer.arrangement_formatter import ArrangementFormatter
 
 class Grouper:
     def __init__(self, in_file, out_file, num_participants_per_group = 4):

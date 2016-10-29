@@ -4,7 +4,7 @@ import os
 import csv
 import shutil
 from tempfile import TemporaryFile
-from ..grouper import Grouper
+from group_optimizer.grouper import Grouper
 
 class GrouperTestCase(unittest.TestCase):
     def setUp(self):

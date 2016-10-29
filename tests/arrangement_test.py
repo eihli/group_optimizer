@@ -1,5 +1,5 @@
 import unittest
-from grouping_algo.arrangement import Arrangement
+from group_optimizer.arrangement import Arrangement
 import os
 import json
 
