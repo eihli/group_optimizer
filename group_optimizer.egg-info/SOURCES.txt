@@ -1,0 +1,4 @@
+group_optimizer.egg-info/PKG-INFO
+group_optimizer.egg-info/SOURCES.txt
+group_optimizer.egg-info/dependency_links.txt
+group_optimizer.egg-info/top_level.txt

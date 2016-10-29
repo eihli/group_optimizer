@@ -8,4 +8,6 @@ setup(
     description='Optimal grouping utilities and algorithms.',
     author='Eric Ihli',
     author_email='eihli@owoga.com',
-    url='https://github.com/eihli/group_optimizer')
+    url='https://github.com/eihli/group_optimizer',
+    packages=['group_optimizer']
+    )
