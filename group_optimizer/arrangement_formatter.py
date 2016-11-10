@@ -4,10 +4,16 @@ from functools import reduce
 class ArrangementFormatter:
     @staticmethod
     def create_arrangement_from_csv(csv_file):
+        # Why is someone giving you an open file that's not seeked?
         csv_file.seek(0)
         csv_reader = csv.reader(csv_file)
         header_row = next(csv_reader)[1:]
         arrangement = []
+
+        # Create an array of Participants as dicts
+        # A dict of Participants might be easier to work with in the rest of the code
+        # but I think this was done because at some point we needed to maintain/guarantee order
+        # as we iterated over arrangement. It can maybe be refactored now.
         for idx, participant in enumerate(header_row):
             arrangement.append({
                 'id': idx,
@@ -18,7 +24,10 @@ class ArrangementFormatter:
             })
 
         for participant1_id, row in enumerate(csv_reader):
+            # This reduce can be confusing. This basically just searches the arrangement list to find and return a participant dict.
             participant1 = reduce(lambda x, y: y if y['id'] == participant1_id and x == None else x, arrangement, None)
+
+            # The first element of the row will be the participants name. We only want their responses here.
             row = row[1:]
             for participant2_id, survey_response in enumerate(row):
                 if survey_response:
@@ -37,6 +46,7 @@ class ArrangementFormatter:
                 csv_writer.writerow(_get_participant_row(participant, group))
         return output_file
 
+# TODO: Clean this up
 def _get_group_score(group):
     score = 0
     for participant1 in group:
