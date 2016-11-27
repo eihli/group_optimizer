@@ -56,7 +56,7 @@ class GrouperFileTestCase(unittest.TestCase):
         self.csv_file.close()
 
     def test_optimize(self):
-        grouper = Grouper(self.csv_file, self.out_file, 2)
+        grouper = Grouper(self.csv_file, 2)
         score = grouper.optimize()
         self.assertEqual(score, -97)
         score = grouper.optimize()

@@ -21,7 +21,7 @@ class Grouper:
     updating current_score
     """
 
-    def __init__(self, in_file, out_file, num_participants_per_group = DEFAULT_PARTICIPANTS_PER_GROUP):
+    def __init__(self, in_file, num_participants_per_group = DEFAULT_PARTICIPANTS_PER_GROUP):
         self.csv = None
         self.arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(in_file)
         self.arrangement = Arrangement(self.arrangement_dict, num_participants_per_group)
