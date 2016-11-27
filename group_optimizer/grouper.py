@@ -7,8 +7,20 @@ from group_optimizer.arrangement_formatter import ArrangementFormatter
 DEFAULT_PARTICIPANTS_PER_GROUP = 4
 
 # TODO:
-# Allow for custom optimization stratagies
+# An arrangement should not know how to score nor optimize itself.
+# It should be just a data representation of an arrangement.
+# It could be scored many different ways.
 class Grouper:
+    """A representation of the grouping arrangement
+    and functions for optimizing groups.
+
+    -current_score - Numeric representation of the 'goodness' of an arrangement.
+    A function of the 'goodness' of each group.
+
+    #optimize - runs optimization on arrangement, mutating arrangement and
+    updating current_score
+    """
+
     def __init__(self, in_file, out_file, num_participants_per_group = DEFAULT_PARTICIPANTS_PER_GROUP):
         self.csv = None
         self.arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(in_file)
