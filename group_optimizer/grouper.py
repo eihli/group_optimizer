@@ -1,11 +1,6 @@
 import sys
 from pathlib import Path
 
-# Relative import boilerplate: http://stackoverflow.com/questions/16981921/relative-imports-in-python-3
-# TODO: Is this still needed?
-root = str(Path(__file__).resolve().parents[1])
-sys.path.append(root)
-
 from group_optimizer.arrangement import Arrangement
 from group_optimizer.arrangement_formatter import ArrangementFormatter
 
