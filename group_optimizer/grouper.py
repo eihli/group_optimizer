@@ -48,7 +48,8 @@ class Grouper:
         return self.current_score
 
     def randomize(self):
-        self.arrangement.randomize()
+        random.shuffle(self.arrangement_dict)
+        self.arrangement = Arrangement(self.arrangement_dict, DEFAULT_PARTICIPANTS_PER_GROUP)
 
     def is_optimized(self):
         return self.last_score == self.arrangement.get_score()
