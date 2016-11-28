@@ -47,6 +47,9 @@ class Grouper:
         self.current_score = self.arrangement.get_score()
         return self.current_score
 
+    def randomize(self):
+        self.arrangement.randomize()
+
     def is_optimized(self):
         return self.last_score == self.arrangement.get_score()
 

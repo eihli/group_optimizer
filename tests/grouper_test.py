@@ -3,6 +3,7 @@ import time
 import os
 import csv
 import shutil
+import random
 from tempfile import TemporaryFile
 from group_optimizer.grouper import Grouper
 
@@ -28,6 +29,46 @@ class GrouperTestCase(unittest.TestCase):
         self.assertEqual(score, -97)
         score = grouper.optimize()
         self.assertEqual(score, 2)
+
+    def test_randomize(self):
+        # This is currently delegating to Arrangement#randomize
+        # and this test is different but redundant.
+        # The idea with this test is to randomly select a participant
+        # and then see how many randomizations we have to do to see that
+        # same participant in the same location. Values chosen are
+        # are currently arbitrary.
+        grouper = Grouper(self.csv_file, 2)
+        # Flatten groups
+        participants = reduce(lambda g1, g2: g1+g2, grouper.arrangement.groups)
+        idx_to_track = random.randint(0, len(participants)-1)
+        participant_to_track = participants[idx_to_track]
+        appearance_count = 1
+        goal_appearance_count = 10
+        attempt_count = 0
+        min_num_attempts_considered_success = 25
+        max_num_attempts_considered_success = 75
+        break_guard = 1000
+        while appearance_count < goal_appearance_count:
+            if attempt_count > break_guard:
+                break
+            participants = reduce(lambda g1, g2: g1+g2, grouper.arrangement.groups)
+            if participants[idx_to_track] == participant_to_track:
+                appearance_count += 1
+            grouper.randomize()
+            attempt_count += 1
+        print(attempt_count)
+        assertion_message = "Expected between {} and {} randomizations " + \
+            "to see participant with name {} appear at position {} " + \
+            "but it appeared {} times in {} attempts."
+        assertion_message = assertion_message.format(
+            min_num_attempts_considered_success,
+            max_num_attempts_considered_success,
+            participant_to_track['name'],
+            idx_to_track,
+            appearance_count,
+            attempt_count)
+        self.assertTrue(attempt_count < max_num_attempts_considered_success,
+            assertion_message)
 
 class GrouperStaticTestCase(unittest.TestCase):
     """Tests the static #group method
