@@ -2,6 +2,7 @@ import unittest
 from group_optimizer.arrangement import Arrangement
 import os
 import json
+import math
 
 class ArrangementTestCase(unittest.TestCase):
     def setUp(self):
@@ -66,4 +67,47 @@ class ArrangementTestCase(unittest.TestCase):
         self.assertEqual(a.get_score(), -200)
         a.make_best_swap_from_unhappiest_group()
         self.assertEqual(a.get_score(), 1)
+
+    def test_randomize(self):
+        """This is a test to catch regressions and may intermittently fail.
+        We are calling #randomize a large number of times and keeping track
+        of the location of participant 'a'. I have chosen some arbitrary values
+        for the number of samples and an acceptable variation that gives
+        me confidence #randomize is working.
+
+        TODO: Look into the math behind calculating a confidence interval
+        that a sample is random. If we flip coin 100 times and get 65 heads,
+        how confident can we be that the coin is 'fair' (50/50)?
+        """
+        participants_per_group = 2
+        arrangement = Arrangement(
+            self.default_json_arrangement,
+            participants_per_group
+        )
+        num_participants = len(arrangement.participants)
+        position_counts = {}
+        # Initialize position counts
+        for i in range(num_participants):
+            position_counts[i] = 0
+        num_samples = 100
+        for i in range(num_samples):
+            arrangement.randomize()
+            groups = arrangement.groups
+            # Flatten groups for easy participant selection by single index
+            participants = reduce(lambda g1, g2: g1+g2, groups)
+            for idx, p in enumerate(participants):
+                if p['name'] == 'a':
+                    position_counts[idx] += 1
+        mean = float(sum(position_counts.values()) / max(num_participants, 1))
+        squared_differences = map(lambda x: (x - mean)**2, position_counts.values())
+        variance = sum(squared_differences) / max(num_participants, 1)
+        std_dev = math.sqrt(variance)
+        expected_max_std_dev = 6
+        self.assertTrue(std_dev < expected_max_std_dev,
+            "Expected std_dev of {} participants divided ".format(num_participants) +
+            "into {} groups over {} samples to be < {} but got {}".format(
+                len(arrangement.groups),
+                num_samples,
+                expected_max_std_dev,
+                std_dev))
 

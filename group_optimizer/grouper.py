@@ -1,4 +1,5 @@
 import sys
+import random
 from pathlib import Path
 
 from group_optimizer.arrangement import Arrangement

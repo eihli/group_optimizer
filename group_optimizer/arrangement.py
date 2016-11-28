@@ -1,4 +1,5 @@
 import sys
+import random
 from pathlib import Path
 root = str(Path(__file__).resolve().parents[1])
 sys.path.append(root)
@@ -32,6 +33,16 @@ class Arrangement:
             return self.groups
         count += 1
         self.optimize(cur_score, count)
+
+    def randomize(self):
+        """Randomize participants in groups"""
+        # Flatten groups. This lets us select by a participant by a single number.
+        participants = reduce(lambda g1, g2: g1+g2, self.groups)
+        for i in range(len(participants)):
+            p1 = participants[i]
+            rand_idx = random.randint(i, len(participants)-1)
+            p2 = participants[rand_idx]
+            self._swap_individuals(p1, p2)
 
     def get_score(self):
         total = 0
