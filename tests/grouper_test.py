@@ -56,7 +56,6 @@ class GrouperTestCase(unittest.TestCase):
                 appearance_count += 1
             grouper.randomize()
             attempt_count += 1
-        print(attempt_count)
         assertion_message = "Expected between {} and {} randomizations " + \
             "to see participant with name {} appear at position {} " + \
             "but it appeared {} times in {} attempts."

@@ -38,9 +38,9 @@ class Arrangement:
         """Randomize participants in groups"""
         # Flatten groups. This lets us select by a participant by a single number.
         participants = reduce(lambda g1, g2: g1+g2, self.groups)
-        for i in range(len(participants)):
+        for i in range(len(participants)-1):
             p1 = participants[i]
-            rand_idx = random.randint(i, len(participants)-1)
+            rand_idx = random.randint(i+1, len(participants)-1)
             p2 = participants[rand_idx]
             self._swap_individuals(p1, p2)
 
