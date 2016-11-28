@@ -44,6 +44,7 @@ class ArrangementFormatter:
             csv_writer.writerow(['Group ' + str(i) + ':', 'Happiness Score: ' + str(_get_group_score(group))] + _get_group_header(group))
             for participant in group:
                 csv_writer.writerow(_get_participant_row(participant, group))
+        output_file.seek(0)
         return output_file
 
 # TODO: Clean this up
