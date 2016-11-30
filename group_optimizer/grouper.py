@@ -11,6 +11,11 @@ DEFAULT_PARTICIPANTS_PER_GROUP = 4
 # An arrangement should not know how to score nor optimize itself.
 # It should be just a data representation of an arrangement.
 # It could be scored many different ways.
+class Strategy:
+    @staticmethod
+    def optimize(arrangement):
+        arrangement.make_best_swap_from_unhappiest_group()
+
 class Grouper:
     """A representation of the grouping arrangement
     and functions for optimizing groups.
@@ -26,9 +31,11 @@ class Grouper:
             in_file,
             out_file,
             num_participants_per_group = 4,
-            arrangement = None):
+            arrangement = None,
+            strategy = None):
         self.csv = None
         self.arrangement = arrangement
+        self.strategy = strategy or Strategy
         self.last_score = float('-inf')
         self.current_score = self.arrangement.get_score()
 
@@ -45,7 +52,7 @@ class Grouper:
 
     # Perform a single optimization swap
     def optimize(self):
-        self.arrangement.make_best_swap_from_unhappiest_group()
+        self.strategy.optimize(self.arrangement)
         self.last_score = self.current_score
         self.current_score = self.arrangement.get_score()
         return self.current_score
