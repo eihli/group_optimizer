@@ -12,12 +12,13 @@ DEFAULT_NUM_INDIVIDUALS = 4
 MAX_ITERATIONS = 100
 
 class Arrangement:
-    def __init__(self, json_arrangement, num_individuals_per_group = DEFAULT_NUM_INDIVIDUALS):
+    def __init__(self, participants, num_individuals_per_group = DEFAULT_NUM_INDIVIDUALS):
         self.groups = []
-        self.participants = json_arrangement
+        self.participants = participants
 
         # 9.0 / 4 = 2.25 = 3 Groups of 3 people each
-        # TODO: Allow other grouping logic. Perhaps we want 1 group of 4 and 1 group of 5
+        # TODO: Allow other grouping logic.
+        # Perhaps we want 1 group of 4 and 1 group of 5
         num_groups = int(math.ceil(float(len(self.participants)) / num_individuals_per_group))
 
         for i in range(num_groups):
