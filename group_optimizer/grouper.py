@@ -22,10 +22,13 @@ class Grouper:
     updating current_score
     """
 
-    def __init__(self, in_file, num_participants_per_group = DEFAULT_PARTICIPANTS_PER_GROUP):
+    def __init__(self,
+            in_file,
+            out_file,
+            num_participants_per_group = 4,
+            arrangement = None):
         self.csv = None
-        self.arrangement_dict = ArrangementFormatter.create_arrangement_from_csv(in_file)
-        self.arrangement = Arrangement(self.arrangement_dict, num_participants_per_group)
+        self.arrangement = arrangement
         self.last_score = float('-inf')
         self.current_score = self.arrangement.get_score()
 
@@ -48,8 +51,7 @@ class Grouper:
         return self.current_score
 
     def randomize(self):
-        random.shuffle(self.arrangement_dict)
-        self.arrangement = Arrangement(self.arrangement_dict, DEFAULT_PARTICIPANTS_PER_GROUP)
+        self.arrangement.randomize()
 
     def is_optimized(self):
         return self.last_score == self.arrangement.get_score()

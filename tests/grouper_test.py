@@ -6,6 +6,8 @@ import shutil
 import random
 from tempfile import TemporaryFile
 from group_optimizer.grouper import Grouper
+from group_optimizer.arrangement_formatter import ArrangementFormatter
+from group_optimizer.arrangement import Arrangement
 
 class GrouperTestCase(unittest.TestCase):
     def setUp(self):
@@ -24,7 +26,10 @@ class GrouperTestCase(unittest.TestCase):
         self.csv_file.close()
 
     def test_optimize(self):
-        grouper = Grouper(self.csv_file, 2)
+        arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
+            self.csv_file)
+        arrangement = Arrangement(arrangement_list, 2)
+        grouper = Grouper(self.csv_file, None, 2, arrangement)
         score = grouper.optimize()
         self.assertEqual(score, -97)
         score = grouper.optimize()
@@ -37,7 +42,10 @@ class GrouperTestCase(unittest.TestCase):
         # and then see how many randomizations we have to do to see that
         # same participant in the same location. Values chosen are
         # are currently arbitrary.
-        grouper = Grouper(self.csv_file, 2)
+        arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
+            self.csv_file)
+        arrangement = Arrangement(arrangement_list, 2)
+        grouper = Grouper(self.csv_file, None, 2, arrangement)
         # Flatten groups
         participants = reduce(lambda g1, g2: g1+g2, grouper.arrangement.groups)
         idx_to_track = random.randint(0, len(participants)-1)
@@ -107,3 +115,30 @@ class GrouperStaticTestCase(unittest.TestCase):
             second_row = next(csv_reader)
             self.assertEqual(second_row, ['', '0: a', '', '1'])
 
+class GrouperFileTestCase(unittest.TestCase):
+    def setUp(self):
+        self.out_file = TemporaryFile('w+')
+        self.csv_file = TemporaryFile('w+')
+        csv_writer = csv.writer(self.csv_file)
+        csv_writer.writerow(['', 'a', 'b', 'c', 'd', 'e', 'f'])
+        csv_writer.writerow(['a', '', '', '', '-1', '', '1'])
+        csv_writer.writerow(['b', '', '', '', '', '-1', ''])
+        csv_writer.writerow(['c', '', '', '', '1', '', ''])
+        csv_writer.writerow(['d', '-1', '', '', '', '', ''])
+        csv_writer.writerow(['e', '', '', '', '', '', ''])
+        csv_writer.writerow(['f', '1', '', '', '', '', ''])
+        self.csv_file.seek(0)
+
+    def tearDown(self):
+        self.out_file.close()
+        self.csv_file.close()
+
+    def test_optimize(self):
+        arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
+            self.csv_file)
+        arrangement = Arrangement(arrangement_list, 2)
+        grouper = Grouper(self.csv_file, self.out_file, 2, arrangement)
+        score = grouper.optimize()
+        self.assertEqual(score, -97)
+        score = grouper.optimize()
+        self.assertEqual(score, 2)
