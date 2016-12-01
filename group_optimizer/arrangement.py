@@ -7,10 +7,36 @@ from functools import reduce
 DEFAULT_NUM_INDIVIDUALS = 4
 MAX_ITERATIONS = 100
 
+class ScoringStrategy:
+    @classmethod
+    def get_score(cls, arrangement):
+        total = 0
+        for group in arrangement.groups:
+            total += group.get_score()
+        return total
+
+class Group(list):
+    def get_score(self):
+        score = 0
+        for participant1 in self:
+            for participant2 in self:
+                if participant1['id'] != participant2['id']:
+                    if participant2['id'] in participant1['affinities']:
+                        score += 1
+                    if participant2['id'] in participant1['technical_refusals']:
+                        score -= 100
+                    if participant2['id'] in participant1['interpersonal_refusals']:
+                        score -= 100
+        return score
+
 class Arrangement:
-    def __init__(self, participants, num_individuals_per_group = DEFAULT_NUM_INDIVIDUALS):
+    def __init__(self,
+            participants,
+            num_individuals_per_group = DEFAULT_NUM_INDIVIDUALS,
+            scoring_strategy = ScoringStrategy):
         self.groups = []
         self.participants = participants
+        self.scoring_strategy = scoring_strategy
 
         # 9.0 / 4 = 2.25 = 3 Groups of 3 people each
         # TODO: Allow other grouping logic.
@@ -18,7 +44,7 @@ class Arrangement:
         num_groups = int(math.ceil(float(len(self.participants)) / num_individuals_per_group))
 
         for i in range(num_groups):
-            self.groups.append([])
+            self.groups.append(Group())
 
         for i, participant in enumerate(self.participants):
             self.groups[i % num_groups].append(participant)
@@ -42,10 +68,7 @@ class Arrangement:
             self._swap_individuals(p1, p2)
 
     def get_score(self):
-        total = 0
-        for group in self.groups:
-            total += self._get_group_score(group)
-        return total
+        return self.scoring_strategy.get_score(self)
 
     def make_best_swap_from_unhappiest_group(self):
         best_gain = 0
@@ -68,7 +91,7 @@ class Arrangement:
 
     def get_unhappiest_group(self):
         # This reduce makes things more confusing and harder to read.
-        group = reduce(lambda g, a: g if self._get_group_score(g) < self._get_group_score(a) else a, self.groups)
+        group = reduce(lambda g, a: g if g.get_score() < a.get_score() else a, self.groups)
         return group
 
     def _swap_individuals(self, a, b):
@@ -97,7 +120,7 @@ class Arrangement:
 
     def __repr__(self):
         result = ''
-        average_group_score = reduce(lambda x, y: x + self._get_group_score(y), self.groups, 0) / len(self.groups)
+        average_group_score = reduce(lambda x, y: x + y.get_score(), self.groups, 0) / len(self.groups)
         result += "Arrangement with Score: " + str(self.get_score()) + " "
         result += "with average score: " + str(average_group_score) + '\n'
         result += '\nGroups:\n'
@@ -108,18 +131,4 @@ class Arrangement:
             i += 1
         result += '\n'
         return result
-
-    def _get_group_score(self, group):
-        score = 0
-        for participant1 in group:
-            for participant2 in group:
-                if participant1['id'] != participant2['id']:
-                    if participant2['id'] in participant1['affinities']:
-                        score += 1
-                    if participant2['id'] in participant1['technical_refusals']:
-                        score -= 100
-                    if participant2['id'] in participant1['interpersonal_refusals']:
-                        score -= 100
-        return score
-
 
