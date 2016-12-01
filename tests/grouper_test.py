@@ -29,7 +29,7 @@ class GrouperTestCase(unittest.TestCase):
         arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
             self.csv_file)
         arrangement = Arrangement(arrangement_list, 2)
-        grouper = Grouper(self.csv_file, None, 2, arrangement)
+        grouper = Grouper(2, arrangement)
         score = grouper.optimize()
         self.assertEqual(score, -97)
         score = grouper.optimize()
@@ -45,7 +45,7 @@ class GrouperTestCase(unittest.TestCase):
         arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
             self.csv_file)
         arrangement = Arrangement(arrangement_list, 2)
-        grouper = Grouper(self.csv_file, None, 2, arrangement)
+        grouper = Grouper(2, arrangement)
         # Flatten groups
         participants = reduce(lambda g1, g2: g1+g2, grouper.arrangement.groups)
         idx_to_track = random.randint(0, len(participants)-1)
@@ -103,18 +103,6 @@ class GrouperStaticTestCase(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp_dir)
 
-
-    def test_group(self):
-        Grouper.group(self.tmp_dir + '/input.csv', self.tmp_dir + '/output.csv', 2)
-        self.assertTrue(os.path.exists(self.tmp_dir + '/output.csv'), "Expected 'group' to create output file but none existed")
-        with open(self.tmp_dir + '/output.csv', 'r') as result_file:
-            csv_reader = csv.reader(result_file)
-            first_row = next(csv_reader)
-            self.assertEqual(first_row, ['Group 0:', 'Happiness Score: 2', '0: a', '5: f'])
-
-            second_row = next(csv_reader)
-            self.assertEqual(second_row, ['', '0: a', '', '1'])
-
 class GrouperFileTestCase(unittest.TestCase):
     def setUp(self):
         self.out_file = TemporaryFile('w+')
@@ -137,7 +125,7 @@ class GrouperFileTestCase(unittest.TestCase):
         arrangement_list = ArrangementFormatter.create_arrangement_from_csv(
             self.csv_file)
         arrangement = Arrangement(arrangement_list, 2)
-        grouper = Grouper(self.csv_file, self.out_file, 2, arrangement)
+        grouper = Grouper(2, arrangement)
         score = grouper.optimize()
         self.assertEqual(score, -97)
         score = grouper.optimize()
