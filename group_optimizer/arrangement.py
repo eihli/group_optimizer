@@ -1,9 +1,5 @@
 import sys
 import random
-from pathlib import Path
-root = str(Path(__file__).resolve().parents[1])
-sys.path.append(root)
-
 import json
 import math
 from functools import reduce
