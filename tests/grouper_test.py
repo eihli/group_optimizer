@@ -4,6 +4,7 @@ import os
 import csv
 import shutil
 import random
+from functools import reduce
 from tempfile import TemporaryFile
 from group_optimizer.grouper import Grouper
 from group_optimizer.arrangement_formatter import ArrangementFormatter
