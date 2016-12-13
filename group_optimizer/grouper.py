@@ -50,3 +50,20 @@ class Grouper:
     def is_optimized(self):
         return self.last_score == self.arrangement.get_score()
 
+class CategoryGrouper:
+    """Group by category preference"""
+
+    @staticmethod
+    def group(individuals, num_groups):
+        groups = [[] for x in range(num_groups)]
+        for i, individual in enumerate(individuals):
+            groups[i % num_groups] = groups[i % num_groups] or []
+            groups[i % num_groups].append(i)
+        return groups
+
+    def score_group(individuals, group, categories):
+        import math
+        responses = []
+        for category in categories:
+            responses.append([individuals[i][category] for i in group])
+        print(responses)
