@@ -115,3 +115,8 @@ class ArrangementFormatterTest(unittest.TestCase):
             fifth_line = next(csv_reader)
             self.assertEqual(fifth_line, ['', '1: b', '', ''])
 
+    def test_survey_to_dict(self):
+        survey = ',React,Angular\na,1,0\nb,0,1'
+        result = ArrangementFormatter.survey_to_dict(survey)
+        self.assertEqual(result[0], {'name': 'a', 'React': '1', 'Angular': '0'})
+        self.assertEqual(result[1], {'name': 'b', 'React': '0', 'Angular': '1'})

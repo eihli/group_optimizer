@@ -3,6 +3,20 @@ from functools import reduce
 
 class ArrangementFormatter:
     @staticmethod
+    def survey_to_dict(survey):
+        rows = [row.split(',') for row in survey.split('\n')]
+        headers = rows.pop(0)
+        header_keys = headers[1:]
+        individuals = {}
+        # Use index as unique indentifier for individuals
+        for i, individual in enumerate(rows):
+            individuals[i] = {}
+            individuals[i]['name'] = individual.pop(0)
+            for j, key in enumerate(header_keys):
+                individuals[i][key] = individual[j]
+        return individuals
+
+    @staticmethod
     def create_arrangement_from_csv(csv_file):
         # Why is someone giving you an open file that's not seeked?
         csv_file.seek(0)
