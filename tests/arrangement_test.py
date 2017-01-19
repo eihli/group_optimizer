@@ -52,6 +52,12 @@ class ArrangementTestCase(unittest.TestCase):
             }
         ]
 
+    def test_get(self):
+        arrangement = Arrangement(self.default_json_arrangement, 2)
+        individual = arrangement[0, 0]
+        self.assertEqual(individual['id'], 0)
+
+
     def test_optimize(self):
         arrangement = Arrangement(self.default_json_arrangement, 2)
         arrangement.optimize()

@@ -49,6 +49,12 @@ class Arrangement:
         for i, participant in enumerate(self.participants):
             self.groups[i % num_groups].append(participant)
 
+    def __getitem__(self, indices):
+        selection = self.groups
+        for index in indices:
+            selection = selection[index]
+        return selection
+
     def optimize(self, prev_score = None, count = 0):
         self.make_best_swap_from_unhappiest_group()
         cur_score = self.get_score()
